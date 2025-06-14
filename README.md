@@ -14,7 +14,7 @@
 ---
 
 ## 🛠️ Cài đặt & chạy dự án
-git clone https://github.com/your-username/ao-store.git
+git clone https://github.com/duynhan935/clothesWebsite.git
 
 cd clotheStore
 
