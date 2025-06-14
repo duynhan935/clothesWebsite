@@ -15,8 +15,11 @@
 
 ## 🛠️ Cài đặt & chạy dự án
 git clone https://github.com/your-username/ao-store.git
+
 cd clotheStore
+
 npm install
+
 npm run dev
 
 
