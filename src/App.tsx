@@ -5,9 +5,14 @@ import { router } from "./routes/routes";
 
 export default function App() {
     return (
-        <ConfigProvider locale={viVN} theme={{ token: { colorPrimary: "#1677ff" } }}>
-            {/* TODO: Thêm AuthProvider, CartProvider, QueryClientProvider … nếu cần */}
-            <RouterProvider router={router} />
-        </ConfigProvider>
+        <div className="bg-[#F2EDE6]">
+            <ConfigProvider
+                locale={viVN}
+                theme={{ token: { colorPrimary: "#1677ff" } }}
+            >
+                {/* TODO: Thêm AuthProvider, CartProvider, QueryClientProvider … nếu cần */}
+                <RouterProvider router={router} />
+            </ConfigProvider>
+        </div>
     );
 }
