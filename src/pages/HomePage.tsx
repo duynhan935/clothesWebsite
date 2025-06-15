@@ -2,6 +2,12 @@ import { useState } from "react";
 import { Button, Select } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 
+import { Modal } from "antd";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState, AppDispatch } from "../redux/store/store";
+import { closeCart } from "../redux/store/cartSlice";
+import Cart from "../components/Cart";
+
 import ProductCard from "../components/ProductCard";
 
 import ao1 from "../assets/ao1.svg?url";
@@ -39,169 +45,12 @@ const products = [
         price: 139,
         image: ao1,
     },
-    {
-        id: 1,
-        name: "Mid Century Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 110,
-        image: ao1,
-    },
-    {
-        id: 2,
-        name: "Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 139,
-        image: ao1,
-    },
-    {
-        id: 1,
-        name: "Mid Century Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 110,
-        image: ao1,
-    },
-    {
-        id: 2,
-        name: "Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 139,
-        image: ao1,
-    },
-    {
-        id: 1,
-        name: "Mid Century Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 110,
-        image: ao1,
-    },
-    {
-        id: 2,
-        name: "Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 139,
-        image: ao1,
-    },
-    {
-        id: 1,
-        name: "Mid Century Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 110,
-        image: ao1,
-    },
-    {
-        id: 2,
-        name: "Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 139,
-        image: ao1,
-    },
-    {
-        id: 1,
-        name: "Mid Century Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 110,
-        image: ao1,
-    },
-    {
-        id: 2,
-        name: "Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 139,
-        image: ao1,
-    },
-    {
-        id: 1,
-        name: "Mid Century Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 110,
-        image: ao1,
-    },
-    {
-        id: 2,
-        name: "Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 139,
-        image: ao1,
-    },
-    {
-        id: 1,
-        name: "Mid Century Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 110,
-        image: ao1,
-    },
-    {
-        id: 2,
-        name: "Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 139,
-        image: ao1,
-    },
-    {
-        id: 1,
-        name: "Mid Century Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 110,
-        image: ao1,
-    },
-    {
-        id: 2,
-        name: "Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 139,
-        image: ao1,
-    },
-    {
-        id: 1,
-        name: "Mid Century Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 110,
-        image: ao1,
-    },
-    {
-        id: 2,
-        name: "Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 139,
-        image: ao1,
-    },
-    {
-        id: 1,
-        name: "Mid Century Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 110,
-        image: ao1,
-    },
-    {
-        id: 2,
-        name: "Modern T-Shirt",
-        category: "Men's Clothes",
-        rating: 5,
-        price: 139,
-        image: ao1,
-    },
 ];
 
 const HomePage = () => {
+    const isCartOpen = useSelector((state: RootState) => state.cart.isCartOpen);
+    const dispatch = useDispatch<AppDispatch>();
+
     const [visibleCount, setVisibleCount] = useState(16); // số sản phẩm hiển thị tối đa ban đầu
 
     const handleLoadMore = () => {
@@ -243,6 +92,10 @@ const HomePage = () => {
                     </Button>
                 </div>
             )}
+
+            <Modal open={isCartOpen} onCancel={() => dispatch(closeCart())} footer={null} width={800}>
+                <Cart />
+            </Modal>
         </div>
     );
 };

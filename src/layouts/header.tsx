@@ -1,5 +1,9 @@
 import { NavLink, Link } from "react-router-dom";
 
+import { useDispatch } from "react-redux";
+import { openCart } from "../redux/store/cartSlice";
+import type { AppDispatch } from "../redux/store/store";
+
 // Danh sách menu chính
 const navItems = [
     { label: "Product", to: "/product" },
@@ -10,6 +14,12 @@ const navItems = [
 ];
 
 const Header = () => {
+    const dispatch = useDispatch<AppDispatch>();
+
+    const handleClick = () => {
+        dispatch(openCart());
+    };
+
     return (
         <header>
             <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -54,7 +64,7 @@ const Header = () => {
                 {/* Action buttons  */}
                 <div className="flex items-center space-x-6">
                     {/* Cart icon */}
-                    <NavLink to="/cart" className="relative text-gray-800 transition-colors">
+                    <div className="relative text-gray-800 transition-colors cursor-pointer" onClick={handleClick}>
                         <svg
                             className="w-8 h-8 text-black"
                             aria-hidden="true"
@@ -72,7 +82,7 @@ const Header = () => {
                                 d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"
                             />
                         </svg>
-                    </NavLink>
+                    </div>
 
                     {/* Login */}
                     <NavLink
