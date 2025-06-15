@@ -74,7 +74,7 @@ const Header = () => {
                         </svg>
                     </NavLink>
 
-                    {/* Login (chỉ hiện trên desktop) */}
+                    {/* Login */}
                     <NavLink
                         to="/login"
                         className="hidden lg:inline text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors"
@@ -82,7 +82,7 @@ const Header = () => {
                         Login
                     </NavLink>
 
-                    {/* Register button */}
+                    {/* Register */}
                     <NavLink
                         to="/register"
                         className="inline-flex items-center rounded-full bg-[#2D2D2D] px-8 py-4 text-sm font-semibold text-[#F2EDE6] shadow hover:opacity-90 transition-opacity"
