@@ -1,12 +1,22 @@
 import { createBrowserRouter } from "react-router-dom";
-import AppLayout from "../layouts/appLayouts";
 
-import HomePage from "../pages/HomePage";
-import ProductDetailsPage from "../pages/ProductDetailsPage";
-import AdminPage from "../pages/Admin/AdminPage";
+/* ----- Layouts ----- */
+import AppLayout from "../layouts/Client/appLayouts";
+import AdminLayout from "../layouts/Admin/adminLayout";
+import RequireAdmin from "../layouts/Admin/RequireAdmin";
+
+/* ----- Pages (Client) ----- */
+import HomePage from "../pages/Client/HomePage";
+import ProductDetailsPage from "../pages/Client/ProductDetailsPage";
+
+/* ----- Pages (Admin) ----- */
+import ProductManagement from "../pages/Admin/ProductManagement";
+import UserManagement from "../pages/Admin/UserManagerment";
+import OrderManagement from "../pages/Admin/OrderManagerment";
+import Dashboard from "../pages/Admin/Dashboard";
 
 export const router = createBrowserRouter([
-    // --- Nhánh sử dụng AppLayout ---
+    // ---------- Client ----------
     {
         element: <AppLayout />,
         children: [
@@ -15,9 +25,24 @@ export const router = createBrowserRouter([
         ],
     },
 
-    // --- Nhánh không dùng AppLayout (Admin) ---
+    // ---------- Admin ----------
     {
         path: "/admin",
-        element: <AdminPage />,
+        element: <RequireAdmin />, // bảo vệ
+        children: [
+            {
+                element: <AdminLayout />, // layout chung
+                children: [
+                    { index: true, element: <ProductManagement /> },
+                    { path: "products", element: <ProductManagement /> },
+                    { path: "users", element: <UserManagement /> },
+                    { path: "orders", element: <OrderManagement /> },
+                    { path: "dashboard", element: <Dashboard /> },
+                ],
+            },
+        ],
     },
+
+    // 404
+    { path: "*", element: <h1>Not Found</h1> },
 ]);

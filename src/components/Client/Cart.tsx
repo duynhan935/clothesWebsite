@@ -1,5 +1,6 @@
 import { Button, Divider } from "antd";
-import ao1 from "../assets/ao1.svg?url";
+import ao1 from "../../assets/ao1.svg?url";
+
 
 const Cart = () => {
     const cartItems = [

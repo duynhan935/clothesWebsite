@@ -1,10 +1,10 @@
 /* eslint-disable no-irregular-whitespace */
 import { useState } from "react";
 import { Button } from "antd";
-import ProductCard from "../components/ProductCard";
+import ProductCard from "./ProductCard";
 
 // 🗂️ Mock data & type
-import { products as defaultProducts, type Product } from "../data/products";
+import { products as defaultProducts, type Product } from "../../data/products";
 
 interface ProductsProps {
     /** Danh sách sản phẩm – mặc định dùng mock */

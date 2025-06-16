@@ -4,17 +4,17 @@ import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
 
 // Redux hooks & slices for modals
 import { useSelector, useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "../redux/store/store";
-import { closeCart } from "../redux/store/cartSlice";
-import { closeLogin } from "../redux/store/loginSlice";
-import { closeRegister } from "../redux/store/registerSlice";
+import type { RootState, AppDispatch } from "../../redux/store/store";
+import { closeCart } from "../../redux/store/cartSlice";
+import { closeLogin } from "../../redux/store/loginSlice";
+import { closeRegister } from "../../redux/store/registerSlice";
 
 // Components
-import Cart from "../components/Cart";
-import Login from "../auth/login";
-import RegisterPage from "../auth/register";
-import Products from "../components/Products";
-import ReviewsGrid from "../components/Reviews";
+import Cart from "../../components/Client/Cart";
+import Login from "../../auth/login";
+import RegisterPage from "../../auth/register";
+import Products from "../../components/Client/Products";
+import ReviewsGrid from "../../components/Client/Reviews";
 
 // Mock constants
 const colors = ["#3b945e", "#f87171", "#f3f4f6", "#cbd5e1"];

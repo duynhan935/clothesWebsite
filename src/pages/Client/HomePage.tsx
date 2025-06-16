@@ -2,16 +2,16 @@ import { Button, Select } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
 import { useSelector, useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "../redux/store/store";
-import { closeCart } from "../redux/store/cartSlice";
-import { closeLogin } from "../redux/store/loginSlice";
-import { closeRegister } from "../redux/store/registerSlice";
+import type { RootState, AppDispatch } from "../../redux/store/store";
+import { closeCart } from "../../redux/store/cartSlice";
+import { closeLogin } from "../../redux/store/loginSlice";
+import { closeRegister } from "../../redux/store/registerSlice";
 
-import Cart from "../components/Cart";
-import Login from "../auth/login";
-import RegisterPage from "../auth/register";
+import Cart from "../../components/Client/Cart";
+import Login from "../../auth/login";
+import RegisterPage from "../../auth/register";
 
-import Products from "../components/Products";
+import Products from "../../components/Client/Products";
 
 const HomePage = () => {
     const dispatch = useDispatch<AppDispatch>();

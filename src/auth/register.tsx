@@ -2,7 +2,7 @@
 import { Button, Form, Input } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookF, faGoogle, faApple } from "@fortawesome/free-brands-svg-icons";
-import SocialButton from "../components/SocialButton";
+import SocialButton from "../components/Client/SocialButton";
 
 export default function RegisterPage() {
     const onFinish = (values: any) => {

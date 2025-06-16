@@ -1,4 +1,4 @@
-import { reviews, type Review } from "../data/reviews";
+import { reviews, type Review} from "../../data/reviews";
 import { Rate } from "antd";
 
 function ReviewCard({ review }: { review: Review }) {

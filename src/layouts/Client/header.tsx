@@ -1,13 +1,16 @@
 import { NavLink, Link } from "react-router-dom";
 
 import { useDispatch } from "react-redux";
-import { openCart } from "../redux/store/cartSlice";
-import { openLogin } from "../redux/store/loginSlice";
-import { openRegister } from "../redux/store/registerSlice";
-import type { AppDispatch } from "../redux/store/store";
+import { openCart } from "../../redux/store/cartSlice";
+import { openLogin } from "../../redux/store/loginSlice";
+import { openRegister } from "../../redux/store/registerSlice";
+import type { AppDispatch } from "../../redux/store/store";
 
 // Danh sách menu chính
-const navItems = [{ label: "Product", to: "/product" }];
+const navItems = [
+    { label: "Product", to: "/product" },
+    { label: "Admin", to: "/admin" },
+];
 
 const Header = () => {
     const dispatch = useDispatch<AppDispatch>();
