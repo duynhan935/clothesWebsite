@@ -2,16 +2,22 @@ import { createBrowserRouter } from "react-router-dom";
 import AppLayout from "../layouts/appLayouts";
 
 import HomePage from "../pages/HomePage";
-import LoginPage from "../auth/login";
-import RegisterPage from "../auth/register";
+import ProductDetailsPage from "../pages/ProductDetailsPage";
+import AdminPage from "../pages/Admin/AdminPage";
 
 export const router = createBrowserRouter([
+    // --- Nhánh sử dụng AppLayout ---
     {
-        element: <AppLayout />, 
+        element: <AppLayout />,
         children: [
-            { index: true, element: <HomePage /> }, 
-            { path: "login", element: <LoginPage /> }, 
-            { path: "register", element: <RegisterPage /> }, 
+            { index: true, element: <HomePage /> },
+            { path: "/product", element: <ProductDetailsPage /> },
         ],
+    },
+
+    // --- Nhánh không dùng AppLayout (Admin) ---
+    {
+        path: "/admin",
+        element: <AdminPage />,
     },
 ]);

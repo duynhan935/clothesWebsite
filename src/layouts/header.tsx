@@ -2,22 +2,26 @@ import { NavLink, Link } from "react-router-dom";
 
 import { useDispatch } from "react-redux";
 import { openCart } from "../redux/store/cartSlice";
+import { openLogin } from "../redux/store/loginSlice";
+import { openRegister } from "../redux/store/registerSlice";
 import type { AppDispatch } from "../redux/store/store";
 
 // Danh sách menu chính
-const navItems = [
-    { label: "Product", to: "/product" },
-    { label: "Pricing", to: "/pricing" },
-    { label: "Contact us", to: "/contact" },
-    { label: "Blog", to: "/blog" },
-    { label: "About Us", to: "/about" },
-];
+const navItems = [{ label: "Product", to: "/product" }];
 
 const Header = () => {
     const dispatch = useDispatch<AppDispatch>();
 
-    const handleClick = () => {
+    const handleOpenCart = () => {
         dispatch(openCart());
+    };
+
+    const handleOpenLogin = () => {
+        dispatch(openLogin());
+    };
+
+    const handleOpenRegister = () => {
+        dispatch(openRegister());
     };
 
     return (
@@ -64,7 +68,7 @@ const Header = () => {
                 {/* Action buttons  */}
                 <div className="flex items-center space-x-6">
                     {/* Cart icon */}
-                    <div className="relative text-gray-800 transition-colors cursor-pointer" onClick={handleClick}>
+                    <div className="relative text-gray-800 transition-colors cursor-pointer" onClick={handleOpenCart}>
                         <svg
                             className="w-8 h-8 text-black"
                             aria-hidden="true"
@@ -85,20 +89,20 @@ const Header = () => {
                     </div>
 
                     {/* Login */}
-                    <NavLink
-                        to="/login"
-                        className="hidden lg:inline text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors"
+                    <div
+                        className="hidden lg:inline text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors cursor-pointer"
+                        onClick={handleOpenLogin}
                     >
                         Login
-                    </NavLink>
+                    </div>
 
                     {/* Register */}
-                    <NavLink
-                        to="/register"
-                        className="inline-flex items-center rounded-full bg-[#2D2D2D] px-8 py-4 text-sm font-semibold text-[#F2EDE6] shadow hover:opacity-90 transition-opacity"
+                    <div
+                        onClick={handleOpenRegister}
+                        className="inline-flex items-center rounded-full bg-[#2D2D2D] px-8 py-4 text-sm font-semibold text-[#F2EDE6] shadow hover:opacity-90 transition-opacity cursor-pointer"
                     >
-                        Register
-                    </NavLink>
+                        Sign Up
+                    </div>
                 </div>
             </div>
         </header>
