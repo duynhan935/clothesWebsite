@@ -1,13 +1,11 @@
 import { NavLink, Link } from "react-router-dom";
-
 import { useDispatch, useSelector } from "react-redux";
 import { openCart } from "../../redux/store/cartSlice";
 import { openLogin } from "../../redux/store/loginSlice";
 import { openRegister } from "../../redux/store/registerSlice";
 import type { RootState, AppDispatch } from "../../redux/store/store";
 import { Avatar, Dropdown, Menu } from "antd";
-
-// Danh sách menu chính
+import { logoutUser } from "../../services/auth.services";
 const navItems = [
     { label: "Product", to: "/product" },
     { label: "Admin", to: "/admin" },
@@ -17,20 +15,11 @@ const Header = () => {
     const dispatch = useDispatch<AppDispatch>();
     const isAuthenticated = useSelector((state: RootState) => state.account.isAuthenticated);
     const userName = useSelector((state: RootState) => state.account.user.username);
+    const email = useSelector((state: RootState) => state.account.user.email);
+    const phone = useSelector((state: RootState) => state.account.user.phone);
+    const address = useSelector((state: RootState) => state.account.user.address);
 
     const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
-
-    const handleOpenCart = () => {
-        dispatch(openCart());
-    };
-
-    const handleOpenLogin = () => {
-        dispatch(openLogin());
-    };
-
-    const handleOpenRegister = () => {
-        dispatch(openRegister());
-    };
 
     return (
         <header>
@@ -76,7 +65,10 @@ const Header = () => {
                 {/* Action buttons  */}
                 <div className="flex items-center space-x-6">
                     {/* Cart icon */}
-                    <div className="relative text-gray-800 transition-colors cursor-pointer" onClick={handleOpenCart}>
+                    <div
+                        className="relative text-gray-800 transition-colors cursor-pointer"
+                        onClick={() => dispatch(openCart())}
+                    >
                         <svg
                             className="w-8 h-8 text-black"
                             aria-hidden="true"
@@ -100,8 +92,21 @@ const Header = () => {
                         <Dropdown
                             overlay={
                                 <Menu>
-                                    <Menu.Item key="profile">Profile</Menu.Item>
-                                    <Menu.Item key="logout">Logout</Menu.Item>
+                                    <Menu.SubMenu key="profile" title="Profile">
+                                        <Menu.Item key="userinfo" disabled>
+                                            <div className="px-2 py-1 text-sm text-gray-800 space-y-2">
+                                                <p>👤 Username: {userName}</p>
+                                                <p>📧 Email: {email}</p>
+                                                <p>📞 Phone: {phone}</p>
+                                                <p>🏠 Address: {address}</p>
+                                            </div>
+                                        </Menu.Item>
+                                    </Menu.SubMenu>
+
+                                    <Menu.Divider />
+                                    <Menu.Item key="logout" onClick={() => logoutUser(dispatch)}>
+                                        Logout
+                                    </Menu.Item>
                                 </Menu>
                             }
                             placement="bottomRight"
@@ -116,15 +121,15 @@ const Header = () => {
                             {/* Login */}
                             <div
                                 className="hidden lg:inline text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors cursor-pointer"
-                                onClick={handleOpenLogin}
+                                onClick={() => dispatch(openLogin())}
                             >
                                 Login
                             </div>
 
                             {/* Register */}
                             <div
-                                onClick={handleOpenRegister}
                                 className="inline-flex items-center rounded-full bg-[#2D2D2D] px-8 py-4 text-sm font-semibold text-[#F2EDE6] shadow hover:opacity-90 transition-opacity cursor-pointer"
+                                onClick={() => dispatch(openRegister())}
                             >
                                 Sign Up
                             </div>

@@ -31,6 +31,9 @@ const profileSlice = createSlice({
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
         },
+        setLoading: (state, action) => {
+            state.isLoading = action.payload; 
+        },
         // doUpdateUserAction: (state, action) => {
         //     state.user.name = action.payload.name;
         //     state.user.phone_number = action.payload.phone_number;
@@ -38,6 +41,6 @@ const profileSlice = createSlice({
     },
 });
 
-export const { doGetProfileAction, doLogoutAction, doNoGetProfileAction } = profileSlice.actions;
+export const { doGetProfileAction, doLogoutAction, doNoGetProfileAction, setLoading } = profileSlice.actions;
 
 export default profileSlice.reducer;

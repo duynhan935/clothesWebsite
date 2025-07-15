@@ -13,6 +13,8 @@ export default function LoginPage() {
     const onFinish = async (values: any) => {
         try {
             const res = await loginUser(values);
+
+
             if (res) {
                 localStorage.setItem("accessToken", res.data.accessToken);
                 localStorage.setItem("refreshToken", res.data.refreshToken);
@@ -21,6 +23,7 @@ export default function LoginPage() {
             const userData = getUserDetails(res.data.accessToken);
             dispatch(doGetProfileAction((await userData).data));
             dispatch(closeLogin());
+            form.resetFields();
         } catch (error: any) {
             console.error("Login failed:", error);
             message.error("Đăng nhập thất bại!");

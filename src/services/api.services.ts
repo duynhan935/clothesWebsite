@@ -18,6 +18,16 @@ export const getUserDetails = (token: string) => {
     return axios.get("/api/auth/user", {
         headers: {
             Authorization: `Bearer ${token}`,
-        }
+        },
     });
-}
+};
+
+export const refreshToken = () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    return axios.get("/api/auth/accesstoken", {
+        headers: {
+            "Refresh-Token": refreshToken || "", 
+        },
+    });
+};
