@@ -2,7 +2,7 @@ import { Button, Input, Select, Space, Table } from "antd";
 
 const { Option } = Select;
 
-const ProductManagement: React.FC = () => {
+function ProductManagement() {
     /* local state tạm, mock data */
     return (
         <Space direction="vertical" size="large" className="w-full">

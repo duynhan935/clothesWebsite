@@ -2,7 +2,7 @@ import { Button, Input, Select, Space, Table } from "antd";
 
 const { Option } = Select;
 
-const UserManagement: React.FC = () => {
+function UserManagement() {
     /* local state tạm, mock data */
     return (
         <Space direction="vertical" size="large" className="w-full">
@@ -52,6 +52,6 @@ const UserManagement: React.FC = () => {
             </div>
         </Space>
     );
-};
+}
 
 export default UserManagement;

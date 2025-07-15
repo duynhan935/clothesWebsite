@@ -2,7 +2,7 @@ import { Button, Input, Select, Space, Table } from "antd";
 
 const { Option } = Select;
 
-const OrderManagement: React.FC = () => {
+function OrderManagement() {
     // local state tạm, mock data
     return (
         <Space direction="vertical" size="large" className="w-full">
@@ -53,6 +53,6 @@ const OrderManagement: React.FC = () => {
             </div>
         </Space>
     );
-};
+}
 
 export default OrderManagement;

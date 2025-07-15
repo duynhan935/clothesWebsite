@@ -1,23 +1,27 @@
 // src/components/Admin/Sidebar.tsx
 import { Menu } from "antd";
 import type { MenuProps } from "antd";
-import { DashboardOutlined, AppstoreOutlined, UserOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import {
+    DashboardOutlined,
+    AppstoreOutlined,
+    UserOutlined,
+    ShoppingCartOutlined,
+} from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface SidebarProps {
     collapsed: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
+function Sidebar({ collapsed }: SidebarProps) {
     const navigate = useNavigate();
     const { pathname } = useLocation();
 
-    /* ---------- Xây mảng items tuỳ theo collapsed ---------- */
+    // Xây mảng items tuỳ theo collapsed
     const menuItems: MenuProps["items"] = [
         {
             key: "/admin/dashboard",
             icon: <DashboardOutlined />,
-            /* Khi thu nhỏ, ẩn label để menu gọn gàng */
             label: collapsed ? null : "Dashboard",
         },
         {
@@ -44,10 +48,9 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
             selectedKeys={[pathname]}
             items={menuItems}
             onClick={({ key }) => navigate(key)}
-            /* Giữ chiều cao toàn màn → cuộn nếu mục dài */
             className="min-h-screen"
         />
     );
-};
+}
 
 export default Sidebar;

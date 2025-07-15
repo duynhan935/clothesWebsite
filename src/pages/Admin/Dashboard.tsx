@@ -7,7 +7,7 @@ interface Stats {
     totalOrders: number;
 }
 
-const Dashboard: React.FC = () => {
+function Dashboard() {
     // mock data –> khi có API chỉ cần gọi và set lại
     const [stats, setStats] = useState<Stats>({
         totalUsers: 0,
@@ -17,7 +17,6 @@ const Dashboard: React.FC = () => {
 
     useEffect(() => {
         // TODO: gọi API thật ở đây
-        // Ví dụ:
         // const fetch = async () => {
         //   const [u, p, o] = await Promise.all([
         //     getUsersAPI(), getProductsAPI(), getOrdersAPI()
@@ -62,6 +61,6 @@ const Dashboard: React.FC = () => {
             ))}
         </Row>
     );
-};
+}
 
 export default Dashboard;

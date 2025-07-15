@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 
 /* ----- Layouts ----- */
 import AppLayout from "../layouts/Client/appLayouts";
-import AdminLayout from "../layouts/Admin/adminLayout";
+import AdminLayout from "../layouts/Admin/AdminLayout";
 import RequireAdmin from "../layouts/Admin/RequireAdmin";
 
 /* ----- Pages (Client) ----- */
@@ -28,10 +28,10 @@ export const router = createBrowserRouter([
     // ---------- Admin ----------
     {
         path: "/admin",
-        element: <RequireAdmin />, // bảo vệ
+        element: <RequireAdmin />, 
         children: [
             {
-                element: <AdminLayout />, // layout chung
+                element: <AdminLayout />, 
                 children: [
                     { index: true, element: <ProductManagement /> },
                     { path: "products", element: <ProductManagement /> },

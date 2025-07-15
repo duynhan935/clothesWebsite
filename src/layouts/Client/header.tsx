@@ -1,10 +1,11 @@
 import { NavLink, Link } from "react-router-dom";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { openCart } from "../../redux/store/cartSlice";
 import { openLogin } from "../../redux/store/loginSlice";
 import { openRegister } from "../../redux/store/registerSlice";
-import type { AppDispatch } from "../../redux/store/store";
+import type { RootState, AppDispatch } from "../../redux/store/store";
+import { Avatar, Dropdown, Menu } from "antd";
 
 // Danh sách menu chính
 const navItems = [
@@ -14,6 +15,10 @@ const navItems = [
 
 const Header = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const isAuthenticated = useSelector((state: RootState) => state.account.isAuthenticated);
+    const userName = useSelector((state: RootState) => state.account.user.username);
+
+    const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
 
     const handleOpenCart = () => {
         dispatch(openCart());
@@ -58,7 +63,7 @@ const Header = () => {
                             key={to}
                             to={to}
                             className={({ isActive }) =>
-                                `text-sm font-medium transition-colors duration-200 ${
+                                `text-lg font-medium transition-colors duration-200 ${
                                     isActive ? "text-[#018294]" : "text-gray-700 hover:text-[#018294]"
                                 }`
                             }
@@ -91,21 +96,40 @@ const Header = () => {
                         </svg>
                     </div>
 
-                    {/* Login */}
-                    <div
-                        className="hidden lg:inline text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors cursor-pointer"
-                        onClick={handleOpenLogin}
-                    >
-                        Login
-                    </div>
+                    {isAuthenticated ? (
+                        <Dropdown
+                            overlay={
+                                <Menu>
+                                    <Menu.Item key="profile">Profile</Menu.Item>
+                                    <Menu.Item key="logout">Logout</Menu.Item>
+                                </Menu>
+                            }
+                            placement="bottomRight"
+                            arrow
+                        >
+                            <Avatar style={{ backgroundColor: "#87d068", cursor: "pointer" }}>
+                                {getInitial(userName)}
+                            </Avatar>
+                        </Dropdown>
+                    ) : (
+                        <>
+                            {/* Login */}
+                            <div
+                                className="hidden lg:inline text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors cursor-pointer"
+                                onClick={handleOpenLogin}
+                            >
+                                Login
+                            </div>
 
-                    {/* Register */}
-                    <div
-                        onClick={handleOpenRegister}
-                        className="inline-flex items-center rounded-full bg-[#2D2D2D] px-8 py-4 text-sm font-semibold text-[#F2EDE6] shadow hover:opacity-90 transition-opacity cursor-pointer"
-                    >
-                        Sign Up
-                    </div>
+                            {/* Register */}
+                            <div
+                                onClick={handleOpenRegister}
+                                className="inline-flex items-center rounded-full bg-[#2D2D2D] px-8 py-4 text-sm font-semibold text-[#F2EDE6] shadow hover:opacity-90 transition-opacity cursor-pointer"
+                            >
+                                Sign Up
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </header>

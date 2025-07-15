@@ -6,7 +6,7 @@ import Sidebar from "../../components/Admin/SideBar";
 
 const { Sider, Header, Content } = Layout;
 
-const AdminLayout: React.FC = () => {
+function AdminLayout() {
     /* ---------- state & hooks ---------- */
     const [collapsed, setCollapsed] = useState(false);
     const navigate = useNavigate();
@@ -36,8 +36,8 @@ const AdminLayout: React.FC = () => {
                 label: (
                     <div
                         onClick={() => {
-                            /* TODO: gọi dispatch(doLogoutAction()) sau khi viết Redux */
-                            console.log("Logout clicked"); // tạm thời
+                            // TODO: gọi dispatch(doLogoutAction()) sau khi viết Redux
+                            console.log("Logout clicked");
                             navigate("/");
                         }}
                         style={{ color: "red", width: "100%" }}
@@ -50,7 +50,6 @@ const AdminLayout: React.FC = () => {
         ],
     };
 
-    /* ---------- render ---------- */
     return (
         <Layout className="min-h-screen">
             {/* Sider */}
@@ -104,6 +103,6 @@ const AdminLayout: React.FC = () => {
             </Layout>
         </Layout>
     );
-};
+}
 
 export default AdminLayout;

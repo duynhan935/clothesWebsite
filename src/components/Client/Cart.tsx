@@ -1,9 +1,16 @@
 import { Button, Divider } from "antd";
 import ao1 from "../../assets/ao1.svg?url";
 
+interface CartItem {
+    id: number;
+    name: string;
+    cartId: string;
+    price: number;
+    img: string;
+}
 
 const Cart = () => {
-    const cartItems = [
+    const cartItems: CartItem[] = [
         {
             id: 1,
             name: "Modern Green Sweater",
@@ -27,7 +34,7 @@ const Cart = () => {
         },
     ];
 
-    const total = cartItems.reduce((sum, item) => sum + item.price, 0);
+    const total: number = cartItems.reduce((sum, item) => sum + item.price, 0);
 
     return (
         <div className="flex flex-row gap-10 p-4">
