@@ -7,9 +7,6 @@ import { store } from "../redux/store/store";
 const axiosClient = axios.create({
     baseURL: import.meta.env.VITE_URL_BACKEND,
     withCredentials: true,
-    headers: {
-        "Content-Type": "application/json",
-    },
 });
 
 /**
@@ -35,6 +32,7 @@ axiosClient.interceptors.request.use(
         if (token && config.headers) {
             config.headers["Authorization"] = `Bearer ${token}`;
         }
+
         return config;
     },
     (error) => Promise.reject(error)

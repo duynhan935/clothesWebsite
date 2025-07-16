@@ -14,6 +14,7 @@ import ProductManagement from "../pages/Admin/ProductManagement";
 import UserManagement from "../pages/Admin/UserManagerment";
 import OrderManagement from "../pages/Admin/OrderManagerment";
 import Dashboard from "../pages/Admin/Dashboard";
+import ProductDetailPage from "../pages/Admin/ProductDetails";
 
 export const router = createBrowserRouter([
     // ---------- Client ----------
@@ -28,16 +29,17 @@ export const router = createBrowserRouter([
     // ---------- Admin ----------
     {
         path: "/admin",
-        element: <RequireAdmin />, 
+        element: <RequireAdmin />,
         children: [
             {
-                element: <AdminLayout />, 
+                element: <AdminLayout />,
                 children: [
                     { index: true, element: <ProductManagement /> },
                     { path: "products", element: <ProductManagement /> },
                     { path: "users", element: <UserManagement /> },
                     { path: "orders", element: <OrderManagement /> },
                     { path: "dashboard", element: <Dashboard /> },
+                    { path: "product/:id", element: <ProductDetailPage /> },
                 ],
             },
         ],

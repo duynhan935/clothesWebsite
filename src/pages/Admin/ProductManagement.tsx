@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../redux/store/store";
 import { createProduct as addProductToStore, setProducts } from "../../redux/store/productsSlice";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -23,10 +24,9 @@ function ProductManagement() {
     const [modalOpen, setModalOpen] = useState(false);
     const [categories, setCategories] = useState<string[]>([]);
     const [editingProduct, setEditingProduct] = useState<any>(null);
-
     const [form] = Form.useForm();
-
     const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -41,7 +41,6 @@ function ProductManagement() {
         const fetchCategories = async () => {
             try {
                 const res = await getAllCategories();
-
                 setCategories(res.data.data);
             } catch (err) {
                 message.error("Failed to fetch categories");
@@ -167,6 +166,9 @@ function ProductManagement() {
                                     <Button type="primary" danger onClick={() => handleDelete(record.id)}>
                                         Delete
                                     </Button>
+                                    <Button onClick={() => navigate(`/admin/product/${record.id}`)}>
+                                        View Details
+                                    </Button>
                                 </Space>
                             ),
                         },
@@ -177,7 +179,7 @@ function ProductManagement() {
                 />
             </div>
 
-            {/* Modal add product */}
+            {/* Modal add/edit product */}
             <Modal
                 title={editingProduct ? "Edit Product" : "Add Product"}
                 open={modalOpen}
@@ -217,26 +219,31 @@ function ProductManagement() {
                     }
                 >
                     <Form.Item name="name" label="Product Name" rules={[{ required: true }]}>
-                        <Input />
+                        {" "}
+                        <Input />{" "}
                     </Form.Item>
                     <Form.Item name="description" label="Description" rules={[{ required: true }]}>
-                        <Input />
+                        {" "}
+                        <Input />{" "}
                     </Form.Item>
                     <Form.Item name="price" label="Price" rules={[{ required: true }]}>
-                        <InputNumber min={0} className="w-full" />
+                        {" "}
+                        <InputNumber min={0} className="w-full" />{" "}
                     </Form.Item>
                     <Form.Item name="category" label="Category" rules={[{ required: true }]}>
+                        {" "}
                         <Select placeholder="Select category">
+                            {" "}
                             {categories.map((cat) => (
                                 <Select.Option key={cat} value={cat}>
                                     {cat}
                                 </Select.Option>
-                            ))}
-                        </Select>
+                            ))}{" "}
+                        </Select>{" "}
                     </Form.Item>
-
                     <Form.Item name="releaseDate" label="Release Date" rules={[{ required: true }]}>
-                        <DatePicker className="w-full" />
+                        {" "}
+                        <DatePicker className="w-full" />{" "}
                     </Form.Item>
                 </Form>
             </Modal>

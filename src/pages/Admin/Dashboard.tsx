@@ -1,44 +1,39 @@
-import { Card, Row, Col } from "antd";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Card, Row, Col, message } from "antd";
 import { useEffect, useState } from "react";
+import { getAllUsers, getAllProducts } from "../../services/api.services";
 
 interface Stats {
     totalUsers: number;
     totalProducts: number;
-    totalOrders: number;
 }
 
 function Dashboard() {
-    // mock data –> khi có API chỉ cần gọi và set lại
     const [stats, setStats] = useState<Stats>({
         totalUsers: 0,
         totalProducts: 0,
-        totalOrders: 0,
     });
 
     useEffect(() => {
-        // TODO: gọi API thật ở đây
-        // const fetch = async () => {
-        //   const [u, p, o] = await Promise.all([
-        //     getUsersAPI(), getProductsAPI(), getOrdersAPI()
-        //   ]);
-        //   setStats({
-        //     totalUsers: u.length,
-        //     totalProducts: p.length,
-        //     totalOrders: o.length,
-        //   });
-        // };
-        // fetch();
+        const fetchStats = async () => {
+            try {
+                const [userRes, productRes] = await Promise.all([getAllUsers(), getAllProducts()]);
 
-        // ------- dữ liệu giả để demo -------
-        setTimeout(() => {
-            setStats({ totalUsers: 4, totalProducts: 4, totalOrders: 9 });
-        }, 300);
+                setStats({
+                    totalUsers: userRes.data.length,
+                    totalProducts: productRes.data.length,
+                });
+            } catch (err) {
+                message.error("Failed to fetch dashboard statistics");
+            }
+        };
+
+        fetchStats();
     }, []);
 
     const cards = [
         { title: "Total Users", value: stats.totalUsers },
         { title: "Total Products", value: stats.totalProducts },
-        { title: "Total Orders", value: stats.totalOrders },
     ];
 
     return (

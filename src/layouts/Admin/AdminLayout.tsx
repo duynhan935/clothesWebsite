@@ -38,6 +38,7 @@ function AdminLayout() {
                     <div
                         onClick={() => {
                             dispatch(doLogoutAction());
+                            navigate("/");
                         }}
                         style={{ color: "red", width: "100%" }}
                     >

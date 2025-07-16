@@ -83,13 +83,40 @@ export const createProductDetail = ({
     image: File;
 }) => {
     const formData = new FormData();
-    formData.append("product", JSON.stringify(product));
+    formData.append("product", new Blob([JSON.stringify(product)], { type: "application/json" }));
     formData.append("image", image);
-    return axios.post("api/product/detail", formData, {
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
-    });
+
+    return axios.post("/api/product/product-details", formData);
+};
+
+export const updateProductDetail = (
+    id: number,
+        {
+        product,
+        image,
+    }: {
+        product: {
+            productId: string;
+            color: string;
+            quantity: number;
+        };
+        image: File;
+    }
+) => {
+    const formData = new FormData();
+    formData.append("product", new Blob([JSON.stringify(product)], { type: "application/json" }));
+    formData.append("image", image);
+
+    return axios.put(`/api/product/product-details/${id}`, formData);
+};
+        
+
+export const deleteProductDetail = (id: number) => {
+    return axios.delete(`api/product/product-details/${id}`);
+}
+
+export const getProductDetailsById = (id: number) => {
+    return axios.get(`api/product/product-details/${id}`);
 };
 
 export const getAllUsers = () => {
