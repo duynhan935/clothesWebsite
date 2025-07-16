@@ -6,6 +6,7 @@ import { openRegister } from "../../redux/store/registerSlice";
 import type { RootState, AppDispatch } from "../../redux/store/store";
 import { Avatar, Dropdown, Menu } from "antd";
 import { logoutUser } from "../../services/auth.services";
+
 const navItems = [
     { label: "Product", to: "/product" },
     { label: "Admin", to: "/admin" },
@@ -18,6 +19,7 @@ const Header = () => {
     const email = useSelector((state: RootState) => state.account.user.email);
     const phone = useSelector((state: RootState) => state.account.user.phone);
     const address = useSelector((state: RootState) => state.account.user.address);
+    const role = useSelector((state: RootState) => state.account.user.role);
 
     const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
 
@@ -47,19 +49,21 @@ const Header = () => {
 
                 {/* Main nav  */}
                 <nav className="hidden lg:flex items-center space-x-8">
-                    {navItems.map(({ label, to }) => (
-                        <NavLink
-                            key={to}
-                            to={to}
-                            className={({ isActive }) =>
-                                `text-lg font-medium transition-colors duration-200 ${
-                                    isActive ? "text-[#018294]" : "text-gray-700 hover:text-[#018294]"
-                                }`
-                            }
-                        >
-                            {label}
-                        </NavLink>
-                    ))}
+                    {navItems
+                        .filter((item) => item.label !== "Admin" || role === "ADMIN")
+                        .map(({ label, to }) => (
+                            <NavLink
+                                key={to}
+                                to={to}
+                                className={({ isActive }) =>
+                                    `text-lg font-medium transition-colors duration-200 ${
+                                        isActive ? "text-[#018294]" : "text-gray-700 hover:text-[#018294]"
+                                    }`
+                                }
+                            >
+                                {label}
+                            </NavLink>
+                        ))}
                 </nav>
 
                 {/* Action buttons  */}

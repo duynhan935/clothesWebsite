@@ -3,22 +3,23 @@ import { Avatar, Button, Dropdown, Layout, Space, theme } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Sidebar from "../../components/Admin/SideBar";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState, AppDispatch } from "../../redux/store/store";
+import { doLogoutAction } from "../../redux/store/profileSlice";
 
 const { Sider, Header, Content } = Layout;
 
 function AdminLayout() {
-    /* ---------- state & hooks ---------- */
+    const dispatch = useDispatch<AppDispatch>();
     const [collapsed, setCollapsed] = useState(false);
     const navigate = useNavigate();
-
-    // TODO: sau này lấy user từ Redux / Context
-    const user = { name: "I'm Admin", avatar_url: "" };
+    const userName = useSelector((state: RootState) => state.account.user.username);
+    const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
 
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
-    /* ---------- dropdown menu ---------- */
     const accountMenu = {
         items: [
             {
@@ -36,9 +37,7 @@ function AdminLayout() {
                 label: (
                     <div
                         onClick={() => {
-                            // TODO: gọi dispatch(doLogoutAction()) sau khi viết Redux
-                            console.log("Logout clicked");
-                            navigate("/");
+                            dispatch(doLogoutAction());
                         }}
                         style={{ color: "red", width: "100%" }}
                     >
@@ -81,8 +80,10 @@ function AdminLayout() {
                     <Dropdown menu={accountMenu} trigger={["hover"]} placement="bottomRight">
                         <a onClick={(e) => e.preventDefault()}>
                             <Space className="mr-4">
-                                <Avatar size="large" src={user.avatar_url} />
-                                {user.name}
+                                <Avatar style={{ backgroundColor: "#87d068", cursor: "pointer" }}>
+                                    {getInitial(userName)}
+                                </Avatar>
+                                {userName}
                                 <DownOutlined />
                             </Space>
                         </a>

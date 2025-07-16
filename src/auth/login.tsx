@@ -14,13 +14,13 @@ export default function LoginPage() {
         try {
             const res = await loginUser(values);
 
-
             if (res) {
                 localStorage.setItem("accessToken", res.data.accessToken);
                 localStorage.setItem("refreshToken", res.data.refreshToken);
             }
             message.success("Đăng nhập thành công!");
             const userData = getUserDetails(res.data.accessToken);
+
             dispatch(doGetProfileAction((await userData).data));
             dispatch(closeLogin());
             form.resetFields();
