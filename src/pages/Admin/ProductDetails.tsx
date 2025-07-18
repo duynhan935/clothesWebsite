@@ -18,16 +18,16 @@ const ProductDetailPage = () => {
     const [productDetails, setProductDetails] = useState<any[]>([]);
     const [addForm] = Form.useForm();
     const [editForm] = Form.useForm();
-    const [file, setFile] = useState<File | null>(null);
-    const [editFile, setEditFile] = useState<File | null>(null);
+
+    const [files, setFiles] = useState<File[]>([]);
+    const [editFiles, setEditFiles] = useState<File[]>([]);
+    const [oldImages, setOldImages] = useState<any[]>([]);
     const [editingDetail, setEditingDetail] = useState<any | null>(null);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
     const fetchProduct = async () => {
         try {
             const res = await getProductById(id!);
-            console.log(res.data.productDetailsList);
-
             setProductDetails(res.data.productDetailsList || []);
         } catch (err) {
             message.error("Failed to fetch product");
@@ -38,10 +38,9 @@ const ProductDetailPage = () => {
         fetchProduct();
     }, [id]);
 
-    // Add new detail
     const onAddFinish = async (values: any) => {
-        if (!file) {
-            message.error("Please upload an image");
+        if (files.length === 0) {
+            message.error("Please upload at least one image");
             return;
         }
 
@@ -52,77 +51,100 @@ const ProductDetailPage = () => {
                     color: values.color,
                     quantity: values.quantity,
                 },
-                image: file,
+                images: files,
             });
             message.success("Added detail successfully!");
             addForm.resetFields();
-            setFile(null);
+            setFiles([]);
             fetchProduct();
         } catch (err) {
             message.error("Failed to submit detail");
+            console.log("Error submitting detail:", err);
         }
     };
 
-    // Handle edit
     const handleEdit = async (record: any) => {
         try {
             const res = await getProductDetailsById(record.id);
             const detail = res.data;
+            setOldImages(detail.images || []);
             setEditingDetail(detail);
-            setEditFile(null);
-
+            setEditFiles([]);
             editForm.setFieldsValue({
                 color: detail.color,
                 quantity: detail.quantity,
             });
-
             setIsEditModalVisible(true);
         } catch (err) {
             message.error("Failed to fetch detail for editing");
         }
     };
 
-    // Submit edit
     const onEditFinish = async (values: any) => {
         try {
             if (!editingDetail) return;
 
+            const oldColor = editingDetail.color;
+            const oldQuantity = editingDetail.quantity;
+
             const updatedProduct = {
                 productId: id!,
-                color: values.color !== editingDetail.color ? values.color : editingDetail.color,
-                quantity: values.quantity !== editingDetail.quantity ? values.quantity : editingDetail.quantity,
+                color: values.color,
+                quantity: values.quantity,
             };
 
-            let imageToSend: File;
+            const isColorChanged = values.color !== oldColor;
+            const isQuantityChanged = values.quantity !== oldQuantity;
+            const isImageChanged = editFiles.length > 0;
 
-            if (editFile) {
-                imageToSend = editFile;
-            } else {
-                const byteString = atob(editingDetail.imageData);
-                const mimeType = editingDetail.imageType;
-                const ab = new ArrayBuffer(byteString.length);
-                const ia = new Uint8Array(ab);
-                for (let i = 0; i < byteString.length; i++) {
-                    ia[i] = byteString.charCodeAt(i);
-                }
-                const blob = new Blob([ab], { type: mimeType });
-                imageToSend = new File([blob], editingDetail.imageName || "old-image", { type: mimeType });
+            if (!isColorChanged && !isQuantityChanged && !isImageChanged) {
+                message.info("No changes detected");
+                return;
             }
 
-            // Gửi dữ liệu
+            let imagesToSend: File[] = [];
+
+            if (isImageChanged) {
+                imagesToSend = editFiles;
+            } else if (oldImages.length > 0) {
+                for (const img of oldImages) {
+                    if (img.imageData && img.imageType) {
+                        const base64 = img.imageData.includes(",") ? img.imageData.split(",")[1] : img.imageData;
+                        const byteString = atob(base64);
+                        const ab = new ArrayBuffer(byteString.length);
+                        const ia = new Uint8Array(ab);
+                        for (let i = 0; i < byteString.length; i++) {
+                            ia[i] = byteString.charCodeAt(i);
+                        }
+                        const blob = new Blob([ab], { type: img.imageType });
+                        const file = new File([blob], img.imageName || "old-image", {
+                            type: img.imageType,
+                        });
+                        imagesToSend.push(file);
+                    }
+                }
+            }
+
+            if (imagesToSend.length === 0) {
+                message.error("No images to send");
+                return;
+            }
+
             await updateProductDetail(editingDetail.id, {
                 product: updatedProduct,
-                image: imageToSend,
+                images: imagesToSend,
             });
 
             message.success("Updated detail successfully!");
             setEditingDetail(null);
-            setEditFile(null);
+            setEditFiles([]);
+            setOldImages([]);
             setIsEditModalVisible(false);
             editForm.resetFields();
             fetchProduct();
         } catch (err) {
             message.error("Failed to update detail");
+            console.error("Error updating detail:", err);
         }
     };
 
@@ -154,15 +176,19 @@ const ProductDetailPage = () => {
         },
         {
             title: "Image",
-            dataIndex: "imageName",
-            key: "imageName",
+            key: "image",
             render: (_: any, record: any) =>
-                record.imageData ? (
-                    <img
-                        src={`data:${record.imageType};base64,${record.imageData}`}
-                        alt={record.imageName}
-                        style={{ width: 80, height: 80, objectFit: "cover" }}
-                    />
+                record.images && record.images.length > 0 ? (
+                    <Space>
+                        {record.images.map((img: any, index: number) => (
+                            <img
+                                key={index}
+                                src={`data:${img.imageType};base64,${img.imageData}`}
+                                alt={img.imageName}
+                                style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8 }}
+                            />
+                        ))}
+                    </Space>
                 ) : (
                     <span>No image</span>
                 ),
@@ -205,16 +231,23 @@ const ProductDetailPage = () => {
                     <InputNumber min={1} max={1000} style={{ width: "100%" }} />
                 </Form.Item>
 
-                <Form.Item label="Image">
+                <Form.Item label="Images">
                     <Upload
                         beforeUpload={(file) => {
-                            setFile(file);
+                            setFiles((prev) => [...prev, file]);
                             return false;
                         }}
-                        showUploadList={{ showRemoveIcon: true }}
-                        maxCount={1}
+                        onRemove={(file) => {
+                            setFiles((prev) => prev.filter((f) => f.name !== file.name));
+                        }}
+                        fileList={files.map((file, index) => ({
+                            uid: file.name + index,
+                            name: file.name,
+                            status: "done",
+                        }))}
+                        multiple
                     >
-                        <Button icon={<UploadOutlined />}>Select File</Button>
+                        <Button icon={<UploadOutlined />}>Select Files</Button>
                     </Upload>
                 </Form.Item>
 
@@ -237,7 +270,7 @@ const ProductDetailPage = () => {
                 title="Edit Product Detail"
                 onCancel={() => {
                     setIsEditModalVisible(false);
-                    setEditFile(null);
+                    setEditFiles([]);
                     editForm.resetFields();
                 }}
                 footer={null}
@@ -257,16 +290,23 @@ const ProductDetailPage = () => {
                         <InputNumber min={1} max={1000} style={{ width: "100%" }} />
                     </Form.Item>
 
-                    <Form.Item label="Image">
+                    <Form.Item label="Images">
                         <Upload
                             beforeUpload={(file) => {
-                                setEditFile(file);
+                                setEditFiles((prev) => [...prev, file]);
                                 return false;
                             }}
-                            showUploadList={{ showRemoveIcon: true }}
-                            maxCount={1}
+                            onRemove={(file) => {
+                                setEditFiles((prev) => prev.filter((f) => f.name !== file.name));
+                            }}
+                            fileList={editFiles.map((file, index) => ({
+                                uid: file.name + index,
+                                name: file.name,
+                                status: "done",
+                            }))}
+                            multiple
                         >
-                            <Button icon={<UploadOutlined />}>Select File</Button>
+                            <Button icon={<UploadOutlined />}>Select Files</Button>
                         </Upload>
                     </Form.Item>
 
@@ -274,7 +314,7 @@ const ProductDetailPage = () => {
                         <Button
                             onClick={() => {
                                 setIsEditModalVisible(false);
-                                setEditFile(null);
+                                setEditFiles([]);
                                 editForm.resetFields();
                             }}
                         >

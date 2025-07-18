@@ -22,7 +22,7 @@ export const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
             { index: true, element: <HomePage /> },
-            { path: "/product", element: <ProductDetailsPage /> },
+            { path: "/product/:id", element: <ProductDetailsPage /> },
         ],
     },
 

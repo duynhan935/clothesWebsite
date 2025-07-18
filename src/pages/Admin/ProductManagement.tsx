@@ -51,6 +51,16 @@ function ProductManagement() {
         fetchCategories();
     }, [dispatch]);
 
+    useEffect(() => {
+        if (editingProduct) {
+            form.setFieldsValue({
+                ...editingProduct,
+                releaseDate: editingProduct.releaseDate ? dayjs(editingProduct.releaseDate) : null,
+            });
+            setModalOpen(true);
+        }
+    }, [editingProduct, form]);
+
     const handleCreate = async (values: any) => {
         try {
             const payload = {
@@ -154,16 +164,23 @@ function ProductManagement() {
                                         type="primary"
                                         onClick={() => {
                                             setEditingProduct(record);
-                                            form.setFieldsValue({
-                                                ...record,
-                                                releaseDate: dayjs(record.releaseDate),
-                                            });
-                                            setModalOpen(true);
                                         }}
                                     >
                                         Edit
                                     </Button>
-                                    <Button type="primary" danger onClick={() => handleDelete(record.id)}>
+                                    <Button
+                                        type="primary"
+                                        danger
+                                        onClick={() => {
+                                            Modal.confirm({
+                                                title: "Confirm Delete",
+                                                content: "Are you sure you want to delete this product?",
+                                                okText: "Yes",
+                                                cancelText: "No",
+                                                onOk: () => handleDelete(record.id),
+                                            });
+                                        }}
+                                    >
                                         Delete
                                     </Button>
                                     <Button onClick={() => navigate(`/admin/product/${record.id}`)}>
@@ -209,41 +226,27 @@ function ProductManagement() {
                             handleCreate(payload);
                         }
                     }}
-                    initialValues={
-                        editingProduct
-                            ? {
-                                  ...editingProduct,
-                                  releaseDate: dayjs(editingProduct.releaseDate),
-                              }
-                            : {}
-                    }
                 >
                     <Form.Item name="name" label="Product Name" rules={[{ required: true }]}>
-                        {" "}
-                        <Input />{" "}
+                        <Input />
                     </Form.Item>
                     <Form.Item name="description" label="Description" rules={[{ required: true }]}>
-                        {" "}
-                        <Input />{" "}
+                        <Input />
                     </Form.Item>
                     <Form.Item name="price" label="Price" rules={[{ required: true }]}>
-                        {" "}
-                        <InputNumber min={0} className="w-full" />{" "}
+                        <InputNumber min={0} className="w-full" />
                     </Form.Item>
                     <Form.Item name="category" label="Category" rules={[{ required: true }]}>
-                        {" "}
                         <Select placeholder="Select category">
-                            {" "}
                             {categories.map((cat) => (
                                 <Select.Option key={cat} value={cat}>
                                     {cat}
                                 </Select.Option>
-                            ))}{" "}
-                        </Select>{" "}
+                            ))}
+                        </Select>
                     </Form.Item>
                     <Form.Item name="releaseDate" label="Release Date" rules={[{ required: true }]}>
-                        {" "}
-                        <DatePicker className="w-full" />{" "}
+                        <DatePicker className="w-full" />
                     </Form.Item>
                 </Form>
             </Modal>

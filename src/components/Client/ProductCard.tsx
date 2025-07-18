@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { Button, Card } from "antd";
@@ -6,13 +7,23 @@ import { Button, Card } from "antd";
 const ProductCard = ({ product }: { product: any }) => {
     const [liked, setLiked] = useState(false);
 
+    const img = product?.productDetailsList?.[0]?.images?.[0];
+    const imageUrl = img
+        ? `data:${img.imageType};base64,${img.imageData}`
+        : "";
+
     return (
         <Card
             className="overflow-hidden rounded-lg transition-all group"
             cover={
                 <div className="relative">
-                    {/* Hình ảnh sản phẩm */}
-                    <img src={product.image} alt={product.name} className="w-full h-64 object-cover" />
+                    <Link to={`/product/${product.id}`} className="block">
+                        <img
+                            src={imageUrl}
+                            alt={img?.imageName || "Default Image"}
+                            style={{ width: 300, height: 300, objectFit: "cover", borderRadius: 8 }}
+                        />
+                    </Link>
 
                     <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button
@@ -38,12 +49,7 @@ const ProductCard = ({ product }: { product: any }) => {
                 <div className="text-base font-semibold text-gray-800 mb-3">{product.name}</div>
 
                 <div className="flex items-center justify-between mt-0.5">
-                    <div className="flex items-center gap-1 text-sm text-gray-600">
-                        <span className="text-yellow-500">★</span>
-                        <span>{product.rating.toFixed(1)}</span>
-                        <span className="text-gray-400 text-xs">(18)</span>
-                    </div>
-                    <span className="font-semibold text-gray-900">${product.price}</span>
+                    <span className="font-semibold text-gray-900">{product.price.toLocaleString()} ₫</span>
                 </div>
             </div>
         </Card>

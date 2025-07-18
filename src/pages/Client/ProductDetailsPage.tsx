@@ -1,209 +1,161 @@
-import { useState } from "react";
-import { Button, Modal } from "antd";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
-
-// Redux hooks & slices for modals
-import { useSelector, useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "../../redux/store/store";
-import { closeCart } from "../../redux/store/cartSlice";
-import { closeLogin } from "../../redux/store/loginSlice";
-import { closeRegister } from "../../redux/store/registerSlice";
-
-// Components
-import Cart from "../../components/Client/Cart";
-import Login from "../../auth/login";
-import RegisterPage from "../../auth/register";
+import { getProductById } from "../../services/api.services";
+import { Button, InputNumber, Spin } from "antd";
 import Products from "../../components/Client/Products";
 
-import ao1 from "../../assets/ao1.svg?url";
+const ProductDetailPage = () => {
+    const { id } = useParams();
+    const [product, setProduct] = useState<any>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
-// Mock constants
-const colors = ["#3b945e", "#f87171", "#f3f4f6", "#cbd5e1"];
-const sizes = ["XL", "L", "M", "S"];
-const thumbnails = ["#fefce8", "#fae8ff", "#e0f2fe"];
+    const [selectedColor, setSelectedColor] = useState<string | null>(null);
+    const [selectedImage, setSelectedImage] = useState<string>("");
+    const [quantityAvailable, setQuantityAvailable] = useState<number>(0);
+    const [quantityToBuy, setQuantityToBuy] = useState<number>(1);
 
-export default function ProductDetails() {
-    const dispatch = useDispatch<AppDispatch>();
-    const isCartOpen = useSelector((state: RootState) => state.cart.isCartOpen);
-    const isLoginOpen = useSelector((state: RootState) => state.login.isLoginOpen);
-    const isRegisterOpen = useSelector((state: RootState) => state.register.isRegisterOpen);
+    useEffect(() => {
+        const fetchProduct = async () => {
+            setLoading(true);
+            try {
+                if (!id) return;
+                const res = await getProductById(id);
+                const data = res.data;
+                setProduct(data);
 
-    const [selectedColor, setSelectedColor] = useState("#3b945e");
-    const [selectedSize, setSelectedSize] = useState("XL");
-    const [quantity, setQuantity] = useState(1);
-    const [selectedImage, setSelectedImage] = useState(thumbnails[0]);
+                if (data.productDetailsList?.length > 0) {
+                    const firstDetail = data.productDetailsList[0];
+                    setSelectedColor(firstDetail.color);
+                    setQuantityAvailable(firstDetail.quantity);
 
-    const handleQtyChange = (type: "inc" | "dec") => {
-        setQuantity((q) => (type === "inc" ? q + 1 : q > 1 ? q - 1 : 1));
-    };
+                    const firstImg = firstDetail.images?.[0];
+                    if (firstImg) {
+                        setSelectedImage(`data:${firstImg.imageType};base64,${firstImg.imageData}`);
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching product:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProduct();
+    }, [id]);
+
+    useEffect(() => {
+        if (product && selectedColor) {
+            const detail = product.productDetailsList.find((d: any) => d.color === selectedColor);
+
+            if (detail) {
+                setQuantityAvailable(detail.quantity);
+
+                const firstImg = detail.images?.[0];
+                if (firstImg) {
+                    setSelectedImage(`data:${firstImg.imageType};base64,${firstImg.imageData}`);
+                }
+            }
+        }
+    }, [selectedColor]);
+
+    if (loading || !product) return <Spin fullscreen />;
+
+    const selectedDetail = product.productDetailsList.find((d: any) => d.color === selectedColor);
+    const imagesForColor = selectedDetail?.images || [];
+    const availableColors = product.productDetailsList.map((detail: any) => detail.color);
 
     return (
-        <div className="bg-[#f4efe9]">
-            {/* ================= Top section ================= */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-                {/* Image section */}
-                <div className="flex flex-col items-center">
-                    <img src={ao1} alt="Product" className="w-[450px] object-contain rounded border border-gray-200" />
+        <>
+            <div className="p-10 flex flex-col md:flex-row gap-10">
+                {/* Left side: Images */}
+                <div className="w-full md:w-1/2">
+                    <div className="w-full h-[400px] mb-4">
+                        <img src={selectedImage} alt="Main" className="w-full h-full object-cover rounded" />
+                    </div>
 
-                    <div className="flex items-center gap-2 mt-4">
+                    <div className="flex items-center gap-2 flex-wrap">
                         <ArrowLeftOutlined className="cursor-pointer" />
-                        {thumbnails.map((color, idx) => (
-                            <div
-                                key={idx}
-                                onClick={() => setSelectedImage(color)}
-                                className={`w-14 h-14 border ${
-                                    selectedImage === color ? "border-black" : "border-transparent"
-                                } cursor-pointer`}
-                                style={{ backgroundColor: color }}
-                            />
-                        ))}
+                        {imagesForColor.map((img: any, idx: number) => {
+                            const fullUrl = `data:${img.imageType};base64,${img.imageData}`;
+                            return (
+                                <div
+                                    key={idx}
+                                    onClick={() => setSelectedImage(fullUrl)}
+                                    className={`w-14 h-14 border-2 rounded cursor-pointer overflow-hidden ${
+                                        selectedImage === fullUrl ? "border-black" : "border-transparent"
+                                    }`}
+                                >
+                                    <img src={fullUrl} alt={img.imageName} className="w-full h-full object-cover" />
+                                </div>
+                            );
+                        })}
                         <ArrowRightOutlined className="cursor-pointer" />
                     </div>
                 </div>
 
-                {/* Details section */}
-                <div className="space-y-4">
-                    <div className="text-sm text-gray-500">Women-Cloths</div>
-                    <h1 className="text-xl font-semibold">Modern Green Sweater</h1>
-
-                    <div className="space-x-3 text-lg">
-                        <span className="line-through text-gray-400">$120</span>
-                        <span className="text-red-500 font-semibold">$60</span>
+                {/* Right side: Info */}
+                <div className="w-full md:w-1/2 space-y-6">
+                    <div>
+                        <h1 className="text-2xl font-bold">{product.name}</h1>
+                        <p className="text-gray-600">{product.description}</p>
+                        <p className="text-lg font-medium text-red-600">{product.price.toLocaleString()} VND</p>
                     </div>
 
-                    {/* Color picker */}
+                    <div>
+                        <div className="mb-1 text-sm font-medium">Category:</div>
+                        <div>{product.category}</div>
+                    </div>
+
+                    <div>
+                        <div className="mb-1 text-sm font-medium">Release Date:</div>
+                        <div>{new Date(product.releaseDate).toLocaleDateString()}</div>
+                    </div>
+
                     <div>
                         <div className="mb-1 text-sm font-medium">Color:</div>
-                        <div className="flex gap-2">
-                            {colors.map((color) => (
+                        <div className="flex gap-2 flex-wrap">
+                            {availableColors.map((color: string) => (
                                 <div
                                     key={color}
                                     onClick={() => setSelectedColor(color)}
-                                    className={`w-6 h-6 rounded cursor-pointer border-2 ${
-                                        selectedColor === color ? "border-black" : "border-transparent"
+                                    className={`px-3 py-1 border rounded cursor-pointer text-sm ${
+                                        selectedColor === color ? "bg-black text-white" : "bg-white"
                                     }`}
-                                    style={{ backgroundColor: color }}
-                                />
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Size picker */}
-                    <div>
-                        <div className="mb-1 text-sm font-medium">Size:</div>
-                        <div className="flex gap-2">
-                            {sizes.map((size) => (
-                                <button
-                                    key={size}
-                                    onClick={() => setSelectedSize(size)}
-                                    disabled={size === "S"}
-                                    className={`w-10 h-8 rounded border text-sm font-medium ${
-                                        selectedSize === size ? "bg-black text-white" : "bg-gray-100"
-                                    } ${size === "S" ? "opacity-40 cursor-not-allowed" : "hover:border-black"}`}
                                 >
-                                    {size}
-                                </button>
+                                    {color}
+                                </div>
                             ))}
                         </div>
                     </div>
 
-                    {/* Quantity */}
                     <div>
-                        <div className="mb-1 text-sm font-medium">Qty:</div>
-                        <div className="flex items-center gap-2">
-                            <button onClick={() => handleQtyChange("dec")} className="border px-2">
-                                -
-                            </button>
-                            <span>{quantity}</span>
-                            <button onClick={() => handleQtyChange("inc")} className="border px-2">
-                                +
-                            </button>
-                        </div>
+                        <div className="mb-1 text-sm font-medium">Quantity:</div>
+                        <InputNumber
+                            min={1}
+                            max={quantityAvailable}
+                            value={quantityToBuy}
+                            onChange={(val) => setQuantityToBuy(val || 1)}
+                        />
+                        <span className="ml-2 text-gray-500"> (Available: {quantityAvailable})</span>
                     </div>
 
-                    <p className="text-sm text-gray-600">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua.
-                    </p>
-
-                    <div className="flex gap-3">
-                        <Button type="primary" className="bg-teal-800 w-full" onClick={() => {}}>
+                    <div>
+                        <Button type="primary" size="large">
                             Add to Cart
                         </Button>
-                        <Button className="bg-yellow-400 w-full text-black font-semibold">Check Out</Button>
                     </div>
                 </div>
             </div>
 
-            {/* ================= Bottom section (About only) ================= */}
-            <div className="px-6 py-8">
-                <h2 className="text-lg font-semibold mb-2">About this product</h2>
-                <p className="text-sm text-gray-700 mb-2">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua.
-                </p>
-                <ul className="list-disc list-inside text-sm text-gray-700">
-                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit</li>
-                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit</li>
-                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit</li>
-                </ul>
+            {/* Similar products */}
+            <div className="flex justify-between items-center px-6">
+                <h2 className="text-xl font-bold mb-4">Similar products</h2>
             </div>
-
-            {/* ================= Similar products ================= */}
-            <div className="px-6 py-10 rounded-lg bg-[#f6f3ee]">
-                <div className="flex flex-col md:flex-row md:items-center justify-between">
-                    <div>
-                        <h2 className="text-xl font-bold text-gray-900 mb-2">Similar products</h2>
-                        <p className="text-sm text-gray-600">
-                            Browse our most popular products and make your day
-                            <br />
-                            more beautiful and glorious.
-                        </p>
-                    </div>
-
-                    <button className="mt-4 mb-4  md:mt-0 border border-[#134e4a] text-[#134e4a] px-5 py-2 rounded hover:bg-[#134e4a] hover:text-white transition">
-                        Browse All
-                    </button>
-                </div>
-                <Products initialVisible={4} />
-            </div>
-
-            {/* ================= Modals ================= */}
-            <Modal
-                open={isCartOpen}
-                onCancel={() => dispatch(closeCart())}
-                footer={null}
-                width={800}
-                centered
-                closable={false}
-                styles={{ body: { padding: 0 } }}
-            >
-                <Cart />
-            </Modal>
-
-            <Modal
-                open={isLoginOpen}
-                onCancel={() => dispatch(closeLogin())}
-                footer={null}
-                width={320}
-                centered
-                closable={false}
-                styles={{ body: { padding: 0 } }}
-            >
-                <Login />
-            </Modal>
-
-            <Modal
-                open={isRegisterOpen}
-                onCancel={() => dispatch(closeRegister())}
-                footer={null}
-                width={420}
-                centered
-                closable={false}
-                styles={{ body: { padding: 0 } }}
-            >
-                <RegisterPage />
-            </Modal>
-        </div>
+            <Products initialVisible={4} excludedId={product.id} />
+        </>
     );
-}
+};
+
+export default ProductDetailPage;

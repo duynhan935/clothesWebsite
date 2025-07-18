@@ -1,48 +1,82 @@
 /* eslint-disable no-irregular-whitespace */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "antd";
 import ProductCard from "./ProductCard";
 
-// 🗂️ Mock data & type
-import { products as defaultProducts, type Product } from "../../data/products";
+import { getAllProducts } from "../../services/api.services";
 
-interface ProductsProps {
-    /** Danh sách sản phẩm – mặc định dùng mock */
-    products?: Product[];
-    /** Số sản phẩm hiển thị ban đầu */
-    initialVisible?: number;
-    /** Số sản phẩm mỗi lần bấm “Load More” */
-    increment?: number;
+interface Product {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    category: string;
+    releaseDate: string;
+    productDetailsList: Array<{
+        id: number;
+        image?: string;
+        color: string;
+        quantity: number;
+    }>;
 }
 
-/**
- // eslint-disable-next-line no-irregular-whitespace
- * Hiển thị lưới sản phẩm + nút Load More.
- * Có thể tái sử dụng ở nhiều trang bằng cách truyền props.
- */
-export default function Products({ products = defaultProducts, initialVisible = 16, increment = 4 }: ProductsProps) {
+interface ProductsProps {
+    initialVisible?: number;
+    increment?: number;
+    excludedId?: string;
+}
+
+export default function Products({ initialVisible = 16, increment = 4, excludedId }: ProductsProps) {
+    const [allProducts, setAllProducts] = useState<Product[]>([]);
     const [visibleCount, setVisibleCount] = useState(initialVisible);
 
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const res = await getAllProducts();
+                let fetchedProducts = res.data;
+
+                if (excludedId) {
+                    fetchedProducts = fetchedProducts.filter((p: Product) => p.id !== excludedId);
+                }
+
+                setAllProducts(fetchedProducts);
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
+
+        fetchProducts();
+    }, [excludedId]);
+
     const handleLoadMore = () => setVisibleCount((v) => v + increment);
-    const hasMore = visibleCount < products.length;
+    const handleLoadLess = () => setVisibleCount((v) => Math.max(initialVisible, v - increment));
+
+    const hasMore = visibleCount < allProducts.length;
+    const hasLess = visibleCount > initialVisible;
 
     return (
         <>
             {/* Grid lưới sản phẩm */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-                {products.slice(0, visibleCount).map((product) => (
-                    <ProductCard key={`${product.id}-${product.name}`} product={product} />
+                {allProducts.slice(0, visibleCount).map((product) => (
+                    <ProductCard key={product.id} product={product} />
                 ))}
             </div>
 
-            {/* Nút Load More */}
-            {hasMore && (
-                <div className="flex justify-center mt-10">
+            {/* Các nút điều khiển */}
+            <div className="flex justify-center gap-4 mt-10">
+                {hasMore && (
                     <Button size="large" onClick={handleLoadMore} className="!bg-[#018294] !text-[#fff]">
                         Load More
                     </Button>
-                </div>
-            )}
+                )}
+                {hasLess && (
+                    <Button size="large" onClick={handleLoadLess} className="!bg-gray-400 !text-white">
+                        Load Less
+                    </Button>
+                )}
+            </div>
         </>
     );
 }

@@ -86,6 +86,7 @@ function UserManagement() {
                 </Space>
 
                 <Table
+                    locale={{ emptyText: "No data" }}
                     rowKey="id"
                     columns={[
                         { title: "Username", dataIndex: "username" },

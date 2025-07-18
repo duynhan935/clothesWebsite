@@ -39,10 +39,8 @@ const HomePage = () => {
                     />
                 </div>
             </div>
-            {/* ----- Danh sách sản phẩm ----- */}
-            <Products /> {/* sử dụng mock data mặc định */}
-            {/* Hoặc truyền data khác:  <Products products={customList} /> */}
-            {/* ----- Modals ----- */}
+            <Products />
+
             <Modal open={isCartOpen} onCancel={() => dispatch(closeCart())} footer={null} width={800}>
                 <Cart />
             </Modal>

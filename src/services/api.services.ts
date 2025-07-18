@@ -73,47 +73,58 @@ export const deleteProduct = (id: string) => {
 
 export const createProductDetail = ({
     product,
-    image,
+    images,
 }: {
     product: {
         productId: string;
         color: string;
         quantity: number;
     };
-    image: File;
+    images: File[];
 }) => {
     const formData = new FormData();
+
+    // Append product JSON as Blob
     formData.append("product", new Blob([JSON.stringify(product)], { type: "application/json" }));
-    formData.append("image", image);
+
+    // Append all images
+    images.forEach((file) => {
+        formData.append("image", file);
+    });
 
     return axios.post("/api/product/product-details", formData);
 };
 
 export const updateProductDetail = (
     id: number,
-        {
+    {
         product,
-        image,
+        images,
     }: {
         product: {
             productId: string;
             color: string;
             quantity: number;
         };
-        image: File;
+        images: File[];
     }
 ) => {
     const formData = new FormData();
+
+    // Append product JSON as Blob
     formData.append("product", new Blob([JSON.stringify(product)], { type: "application/json" }));
-    formData.append("image", image);
+
+    // Append all images
+    images.forEach((file) => {
+        formData.append("image", file);
+    });
 
     return axios.put(`/api/product/product-details/${id}`, formData);
 };
-        
 
 export const deleteProductDetail = (id: number) => {
     return axios.delete(`api/product/product-details/${id}`);
-}
+};
 
 export const getProductDetailsById = (id: number) => {
     return axios.get(`api/product/product-details/${id}`);

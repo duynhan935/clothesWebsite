@@ -8,7 +8,6 @@ import { Avatar, Dropdown, Menu } from "antd";
 import { logoutUser } from "../../services/auth.services";
 
 const navItems = [
-    { label: "Product", to: "/product" },
     { label: "Admin", to: "/admin" },
 ];
 
