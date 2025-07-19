@@ -24,6 +24,7 @@ function ProductManagement() {
     const [modalOpen, setModalOpen] = useState(false);
     const [categories, setCategories] = useState<string[]>([]);
     const [editingProduct, setEditingProduct] = useState<any>(null);
+    const [productId, setProductId] = useState<number | null>(null);
     const [form] = Form.useForm();
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
@@ -69,7 +70,9 @@ function ProductManagement() {
                     values.releaseDate instanceof dayjs ? values.releaseDate.format("YYYY-MM-DD") : values.releaseDate,
             };
 
-            await createProduct(payload);
+            const res = await createProduct(payload);
+            setProductId(res.data.id);
+
             dispatch(addProductToStore(payload));
             message.success("Created successfully!");
             setModalOpen(false);
@@ -175,7 +178,7 @@ function ProductManagement() {
                                             Modal.confirm({
                                                 title: "Confirm Delete",
                                                 content: "Are you sure you want to delete this product?",
-                                                okText: "Yes",
+                                                okText: "Yes",  
                                                 cancelText: "No",
                                                 onOk: () => handleDelete(record.id),
                                             });
@@ -183,7 +186,7 @@ function ProductManagement() {
                                     >
                                         Delete
                                     </Button>
-                                    <Button onClick={() => navigate(`/admin/product/${record.id}`)}>
+                                    <Button onClick={() => navigate(`/admin/product/${productId}`)}>
                                         View Details
                                     </Button>
                                 </Space>
