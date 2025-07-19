@@ -16,6 +16,8 @@ import type { AppDispatch, RootState } from "../../redux/store/store";
 import { createProduct as addProductToStore, setProducts } from "../../redux/store/productsSlice";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import ProductTable from "../../components/Admin/ProductTable";
+import ProductFilter from "../../components/Admin/ProductFilter";
 
 const { Option } = Select;
 
@@ -25,32 +27,22 @@ function ProductManagement() {
     const [modalOpen, setModalOpen] = useState(false);
     const [categories, setCategories] = useState<string[]>([]);
     const [editingProduct, setEditingProduct] = useState<any>(null);
-    const [productId, setProductId] = useState<number | null>(null);
+    const [productId, setProductId] = useState<string | null>(null);
     const [form] = Form.useForm();
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchProducts = async () => {
+        const fetch = async () => {
             try {
-                const res = await getAllProducts();
-                dispatch(setProducts(res.data));
+                const [productRes, categoryRes] = await Promise.all([getAllProducts(), getAllCategories()]);
+                dispatch(setProducts(productRes.data));
+                setCategories(categoryRes.data.data);
             } catch (err) {
-                message.error("Failed to fetch products");
+                message.error("Failed to fetch product/category data");
             }
         };
-
-        const fetchCategories = async () => {
-            try {
-                const res = await getAllCategories();
-                setCategories(res.data.data);
-            } catch (err) {
-                message.error("Failed to fetch categories");
-            }
-        };
-
-        fetchProducts();
-        fetchCategories();
+        fetch();
     }, [dispatch]);
 
     useEffect(() => {
@@ -113,27 +105,7 @@ function ProductManagement() {
         <Space direction="vertical" size="large" className="w-full">
             {/* Filter panel */}
             <div className="bg-white p-4 rounded shadow">
-                <Space wrap>
-                    <Space>
-                        <span>Brand:</span>
-                        <Input placeholder="Brand" />
-                    </Space>
-                    <Space>
-                        <span>Product name:</span>
-                        <Input placeholder="Name" />
-                    </Space>
-                    <Space>
-                        <span>Size:</span>
-                        <Select placeholder="All" style={{ width: 120 }}>
-                            <Option value="S">S</Option>
-                            <Option value="M">M</Option>
-                            <Option value="L">L</Option>
-                        </Select>
-                    </Space>
-
-                    <Button type="primary">Query</Button>
-                    <Button>Reset</Button>
-                </Space>
+                <ProductFilter />
             </div>
 
             {/* Action bar + table */}
@@ -146,57 +118,13 @@ function ProductManagement() {
                     </Button>
                 </Space>
 
-                <Table
-                    rowKey="id"
-                    columns={[
-                        { title: "Name", dataIndex: "name" },
-                        { title: "Description", dataIndex: "description" },
-                        { title: "Price", dataIndex: "price" },
-                        { title: "Category", dataIndex: "category" },
-                        {
-                            title: "Release Date",
-                            dataIndex: "releaseDate",
-                            render: (text: string) => {
-                                return text ? dayjs(text).format("DD/MM/YYYY") : "";
-                            },
-                        },
-                        {
-                            title: "Actions",
-                            render: (_, record) => (
-                                <Space>
-                                    <Button
-                                        type="primary"
-                                        onClick={() => {
-                                            setEditingProduct(record);
-                                        }}
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        type="primary"
-                                        danger
-                                        onClick={() => {
-                                            Modal.confirm({
-                                                title: "Confirm Delete",
-                                                content: "Are you sure you want to delete this product?",
-                                                okText: "Yes",
-                                                cancelText: "No",
-                                                onOk: () => handleDelete(record.id),
-                                            });
-                                        }}
-                                    >
-                                        Delete
-                                    </Button>
-                                    <Button onClick={() => navigate(`/admin/product/${record.id === null ? productId : record.id}`)}>
-                                        View Details
-                                    </Button>
-                                </Space>
-                            ),
-                        },
-                    ]}
-                    dataSource={products}
+                <ProductTable
+                    data={products}
                     loading={loading}
-                    pagination={{ position: ["bottomCenter"] }}
+                    onEdit={setEditingProduct}
+                    onDelete={handleDelete}
+                    onViewDetail={(id) => navigate(`/admin/product/${id}`)}
+                    fallbackId={productId}
                 />
             </div>
 
