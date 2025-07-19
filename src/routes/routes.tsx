@@ -15,6 +15,7 @@ import UserManagement from "../pages/Admin/UserManagerment";
 import OrderManagement from "../pages/Admin/OrderManagerment";
 import Dashboard from "../pages/Admin/Dashboard";
 import ProductDetailPage from "../pages/Admin/ProductDetails";
+import NotFoundPage from "../pages/Error/ErrorPage";
 
 export const router = createBrowserRouter([
     // ---------- Client ----------
@@ -46,5 +47,5 @@ export const router = createBrowserRouter([
     },
 
     // 404
-    { path: "*", element: <h1>Not Found</h1> },
+    { path: "*", element: <NotFoundPage /> },
 ]);
