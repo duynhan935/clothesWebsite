@@ -9,6 +9,7 @@ import {
     updateProduct,
     deleteProduct,
 } from "../../services/api.services";
+import ProductForm from "../../components/Admin/ProductForm";
 
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../redux/store/store";
@@ -71,9 +72,9 @@ function ProductManagement() {
             };
 
             const res = await createProduct(payload);
-            setProductId(res.data.id);
 
-            dispatch(addProductToStore(payload));
+            setProductId(res.data.id);
+            dispatch(addProductToStore(res.data));
             message.success("Created successfully!");
             setModalOpen(false);
             form.resetFields();
@@ -178,7 +179,7 @@ function ProductManagement() {
                                             Modal.confirm({
                                                 title: "Confirm Delete",
                                                 content: "Are you sure you want to delete this product?",
-                                                okText: "Yes",  
+                                                okText: "Yes",
                                                 cancelText: "No",
                                                 onOk: () => handleDelete(record.id),
                                             });
@@ -186,7 +187,7 @@ function ProductManagement() {
                                     >
                                         Delete
                                     </Button>
-                                    <Button onClick={() => navigate(`/admin/product/${productId}`)}>
+                                    <Button onClick={() => navigate(`/admin/product/${record.id === null ? productId : record.id}`)}>
                                         View Details
                                     </Button>
                                 </Space>
@@ -211,47 +212,12 @@ function ProductManagement() {
                 onOk={() => form.submit()}
                 okText={editingProduct ? "Update" : "Create"}
             >
-                <Form
+                <ProductForm
                     form={form}
-                    layout="vertical"
-                    onFinish={(values) => {
-                        const payload = {
-                            ...values,
-                            releaseDate:
-                                values.releaseDate && dayjs.isDayjs(values.releaseDate)
-                                    ? values.releaseDate.format("YYYY-MM-DD")
-                                    : values.releaseDate,
-                        };
-
-                        if (editingProduct) {
-                            handleUpdate(editingProduct.id, payload);
-                        } else {
-                            handleCreate(payload);
-                        }
-                    }}
-                >
-                    <Form.Item name="name" label="Product Name" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="description" label="Description" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="price" label="Price" rules={[{ required: true }]}>
-                        <InputNumber min={0} className="w-full" />
-                    </Form.Item>
-                    <Form.Item name="category" label="Category" rules={[{ required: true }]}>
-                        <Select placeholder="Select category">
-                            {categories.map((cat) => (
-                                <Select.Option key={cat} value={cat}>
-                                    {cat}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item name="releaseDate" label="Release Date" rules={[{ required: true }]}>
-                        <DatePicker className="w-full" />
-                    </Form.Item>
-                </Form>
+                    categories={categories}
+                    onFinish={editingProduct ? (values) => handleUpdate(editingProduct.id, values) : handleCreate}
+                    initialValues={editingProduct || {}}
+                />
             </Modal>
         </Space>
     );

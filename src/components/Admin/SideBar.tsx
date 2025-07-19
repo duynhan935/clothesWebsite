@@ -17,7 +17,6 @@ function Sidebar({ collapsed }: SidebarProps) {
     const navigate = useNavigate();
     const { pathname } = useLocation();
 
-    // Xây mảng items tuỳ theo collapsed
     const menuItems: MenuProps["items"] = [
         {
             key: "/admin/dashboard",
