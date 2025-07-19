@@ -10,6 +10,8 @@
 - 💨 [Tailwind CSS](https://tailwindcss.com/)
 - 🧩 [Ant Design](https://ant.design/)
 - 🌐 [React Router DOM](https://reactrouter.com/)
+- 📦 [Redux Toolkit](https://redux-toolkit.js.org/)
+- 🔄 [React Redux](https://react-redux.js.org/)
 
 ---
 
