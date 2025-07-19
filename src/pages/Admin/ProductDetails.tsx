@@ -21,7 +21,6 @@ const ProductDetailPage = () => {
 
     const [files, setFiles] = useState<File[]>([]);
     const [editFiles, setEditFiles] = useState<File[]>([]);
-    const [oldImages, setOldImages] = useState<any[]>([]);
     const [editingDetail, setEditingDetail] = useState<any | null>(null);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
@@ -59,7 +58,6 @@ const ProductDetailPage = () => {
             fetchProduct();
         } catch (err) {
             message.error("Failed to submit detail");
-            console.log("Error submitting detail:", err);
         }
     };
 
@@ -67,7 +65,6 @@ const ProductDetailPage = () => {
         try {
             const res = await getProductDetailsById(record.id);
             const detail = res.data;
-            setOldImages(detail.images || []);
             setEditingDetail(detail);
             setEditFiles([]);
             editForm.setFieldsValue({
@@ -102,49 +99,25 @@ const ProductDetailPage = () => {
                 return;
             }
 
-            let imagesToSend: File[] = [];
+            const payload: {
+                product: typeof updatedProduct;
+                images?: File[];
+            } = { product: updatedProduct };
 
             if (isImageChanged) {
-                imagesToSend = editFiles;
-            } else if (oldImages.length > 0) {
-                for (const img of oldImages) {
-                    if (img.imageData && img.imageType) {
-                        const base64 = img.imageData.includes(",") ? img.imageData.split(",")[1] : img.imageData;
-                        const byteString = atob(base64);
-                        const ab = new ArrayBuffer(byteString.length);
-                        const ia = new Uint8Array(ab);
-                        for (let i = 0; i < byteString.length; i++) {
-                            ia[i] = byteString.charCodeAt(i);
-                        }
-                        const blob = new Blob([ab], { type: img.imageType });
-                        const file = new File([blob], img.imageName || "old-image", {
-                            type: img.imageType,
-                        });
-                        imagesToSend.push(file);
-                    }
-                }
+                payload.images = editFiles;
             }
 
-            if (imagesToSend.length === 0) {
-                message.error("No images to send");
-                return;
-            }
-
-            await updateProductDetail(editingDetail.id, {
-                product: updatedProduct,
-                images: imagesToSend,
-            });
+            await updateProductDetail(editingDetail.id, payload);
 
             message.success("Updated detail successfully!");
             setEditingDetail(null);
             setEditFiles([]);
-            setOldImages([]);
             setIsEditModalVisible(false);
             editForm.resetFields();
             fetchProduct();
         } catch (err) {
             message.error("Failed to update detail");
-            console.error("Error updating detail:", err);
         }
     };
 

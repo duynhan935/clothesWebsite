@@ -80,17 +80,17 @@ export const createProductDetail = ({
         color: string;
         quantity: number;
     };
-    images: File[];
+    images?: File[]; 
 }) => {
     const formData = new FormData();
 
-    // Append product JSON as Blob
     formData.append("product", new Blob([JSON.stringify(product)], { type: "application/json" }));
 
-    // Append all images
-    images.forEach((file) => {
-        formData.append("image", file);
-    });
+    if (images && images.length > 0) {
+        images.forEach((file) => {
+            formData.append("image", file);
+        });
+    }
 
     return axios.post("/api/product/product-details", formData);
 };
@@ -106,18 +106,18 @@ export const updateProductDetail = (
             color: string;
             quantity: number;
         };
-        images: File[];
+        images?: File[]; 
     }
 ) => {
     const formData = new FormData();
 
-    // Append product JSON as Blob
     formData.append("product", new Blob([JSON.stringify(product)], { type: "application/json" }));
 
-    // Append all images
-    images.forEach((file) => {
-        formData.append("image", file);
-    });
+    if (images && images.length > 0) {
+        images.forEach((file) => {
+            formData.append("image", file);
+        });
+    }
 
     return axios.put(`/api/product/product-details/${id}`, formData);
 };

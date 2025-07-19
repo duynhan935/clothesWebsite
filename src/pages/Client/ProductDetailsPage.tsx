@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
@@ -6,9 +5,44 @@ import { getProductById } from "../../services/api.services";
 import { Button, InputNumber, Spin } from "antd";
 import Products from "../../components/Client/Products";
 
+// Interfaces
+export interface ProductImage {
+    imageName: string;
+    imageType: string;
+    imageData: string;
+}
+
+export interface ProductDetail {
+    id: number;
+    color: string;
+    quantity: number;
+    images?: ProductImage[];
+}
+
+export interface Product {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    category: string;
+    releaseDate: string;
+    productDetailsList: ProductDetail[];
+}
+
+export interface ProductDetailInput {
+    productId: string;
+    color: string;
+    quantity: number;
+}
+
+export interface CreateProductDetailPayload {
+    product: ProductDetailInput;
+    images?: File[];
+}
+
 const ProductDetailPage = () => {
     const { id } = useParams();
-    const [product, setProduct] = useState<any>(null);
+    const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -22,7 +56,7 @@ const ProductDetailPage = () => {
             try {
                 if (!id) return;
                 const res = await getProductById(id);
-                const data = res.data;
+                const data: Product = res.data;
                 setProduct(data);
 
                 if (data.productDetailsList?.length > 0) {
@@ -47,7 +81,7 @@ const ProductDetailPage = () => {
 
     useEffect(() => {
         if (product && selectedColor) {
-            const detail = product.productDetailsList.find((d: any) => d.color === selectedColor);
+            const detail = product.productDetailsList.find((d) => d.color === selectedColor);
 
             if (detail) {
                 setQuantityAvailable(detail.quantity);
@@ -58,13 +92,13 @@ const ProductDetailPage = () => {
                 }
             }
         }
-    }, [selectedColor]);
+    }, [selectedColor, product]);
 
     if (loading || !product) return <Spin fullscreen />;
 
-    const selectedDetail = product.productDetailsList.find((d: any) => d.color === selectedColor);
+    const selectedDetail = product.productDetailsList.find((d) => d.color === selectedColor);
     const imagesForColor = selectedDetail?.images || [];
-    const availableColors = product.productDetailsList.map((detail: any) => detail.color);
+    const availableColors = Array.from(new Set(product.productDetailsList.map((detail) => detail.color)));
 
     return (
         <>
@@ -77,7 +111,7 @@ const ProductDetailPage = () => {
 
                     <div className="flex items-center gap-2 flex-wrap">
                         <ArrowLeftOutlined className="cursor-pointer" />
-                        {imagesForColor.map((img: any, idx: number) => {
+                        {imagesForColor.map((img, idx) => {
                             const fullUrl = `data:${img.imageType};base64,${img.imageData}`;
                             return (
                                 <div
@@ -116,7 +150,7 @@ const ProductDetailPage = () => {
                     <div>
                         <div className="mb-1 text-sm font-medium">Color:</div>
                         <div className="flex gap-2 flex-wrap">
-                            {availableColors.map((color: string) => (
+                            {availableColors.map((color) => (
                                 <div
                                     key={color}
                                     onClick={() => setSelectedColor(color)}
