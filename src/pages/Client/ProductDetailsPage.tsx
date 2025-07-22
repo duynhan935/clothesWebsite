@@ -1,9 +1,17 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
-import { getProductById } from "../../services/api.services";
-import { Button, InputNumber, Spin } from "antd";
+import { addProductToCart, getAllProductDetailsById, getProductById } from "../../services/api.services";
+import { Button, InputNumber, message, Modal, Spin } from "antd";
 import Products from "../../components/Client/Products";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState, AppDispatch } from "../../redux/store/store";
+import { addItemToCart, closeCart } from "../../redux/store/cartSlice";
+import { closeLogin } from "../../redux/store/loginSlice";
+import { closeRegister } from "../../redux/store/registerSlice";
+import RegisterPage from "../../auth/register";
+import Cart from "../../components/Client/Cart";
+import Login from "../../auth/login";
 
 // Interfaces
 export interface ProductImage {
@@ -41,6 +49,12 @@ export interface CreateProductDetailPayload {
 }
 
 const ProductDetailPage = () => {
+    const dispatch = useDispatch<AppDispatch>();
+
+    const isCartOpen = useSelector((state: RootState) => state.cart.isCartOpen);
+    const isLoginOpen = useSelector((state: RootState) => state.login.isLoginOpen);
+    const isRegisterOpen = useSelector((state: RootState) => state.register.isRegisterOpen);
+
     const { id } = useParams();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -99,6 +113,35 @@ const ProductDetailPage = () => {
     const selectedDetail = product.productDetailsList.find((d) => d.color === selectedColor);
     const imagesForColor = selectedDetail?.images || [];
     const availableColors = Array.from(new Set(product.productDetailsList.map((detail) => detail.color)));
+
+    const handleAddToCart = async () => {
+        if (!selectedDetail) {
+            console.log("Please select a color and quantity before adding to cart.");
+            return;
+        }
+        try {
+            await addProductToCart({
+                quantity: quantityToBuy,
+                productDetailsId: selectedDetail.id.toString(),
+            });
+            const newItem = await getAllProductDetailsById(selectedDetail.id);
+            dispatch(
+                addItemToCart({
+                    id: newItem.data.id,
+                    quantity: quantityToBuy,
+                    img: selectedImage,
+                    name: product.name,
+                    price: product.price,
+                    color: newItem.data.color,
+                    stockQuantity: quantityAvailable,
+                })
+            );
+            message.success("Product added to cart successfully!");
+        } catch (error) {
+            console.error("Error adding product to cart:", error);
+            message.error("Failed to add product to cart.");
+        }
+    };
 
     return (
         <>
@@ -176,7 +219,7 @@ const ProductDetailPage = () => {
                     </div>
 
                     <div>
-                        <Button type="primary" size="large">
+                        <Button type="primary" size="large" onClick={handleAddToCart} disabled={quantityAvailable <= 0}>
                             Add to Cart
                         </Button>
                     </div>
@@ -188,6 +231,30 @@ const ProductDetailPage = () => {
                 <h2 className="text-xl font-bold mb-4">Similar products</h2>
             </div>
             <Products initialVisible={4} excludedId={product.id} />
+
+            <Modal open={isCartOpen} onCancel={() => dispatch(closeCart())} footer={null} width={800}>
+                <Cart />
+            </Modal>
+            <Modal
+                open={isLoginOpen}
+                onCancel={() => dispatch(closeLogin())}
+                footer={null}
+                width={400}
+                centered
+                styles={{ body: { padding: 0 } }}
+            >
+                <Login />
+            </Modal>
+            <Modal
+                open={isRegisterOpen}
+                onCancel={() => dispatch(closeRegister())}
+                footer={null}
+                width={400}
+                centered
+                styles={{ body: { padding: 0 } }}
+            >
+                <RegisterPage />
+            </Modal>
         </>
     );
 };

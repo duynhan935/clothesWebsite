@@ -80,7 +80,7 @@ export const createProductDetail = ({
         color: string;
         quantity: number;
     };
-    images?: File[]; 
+    images?: File[];
 }) => {
     const formData = new FormData();
 
@@ -106,7 +106,7 @@ export const updateProductDetail = (
             color: string;
             quantity: number;
         };
-        images?: File[]; 
+        images?: File[];
     }
 ) => {
     const formData = new FormData();
@@ -152,4 +152,28 @@ export const updateUser = (
 
 export const deleteUser = (id: string) => {
     return axios.delete(`api/users/${id}`);
+};
+
+export const addProductToCart = (data: { quantity: number; productDetailsId: string }) => {
+    return axios.post(`api/order`, data);
+};
+
+export const removeItemFromCart = (cartId: number) => {
+    return axios.delete(`api/order/${cartId}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+    });
+};
+
+export const getCartItems = () => {
+    return axios.get(`api/order`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+    });
+};
+
+export const getAllProductDetailsById = (id: number) => {
+    return axios.get(`api/product/product-details/infor/${id}`);
 };

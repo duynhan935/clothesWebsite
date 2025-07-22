@@ -2,15 +2,13 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
-import { Button, Card } from "antd";
+import { Card } from "antd";
 
 const ProductCard = ({ product }: { product: any }) => {
     const [liked, setLiked] = useState(false);
 
     const img = product?.productDetailsList?.[0]?.images?.[0];
-    const imageUrl = img
-        ? `data:${img.imageType};base64,${img.imageData}`
-        : "";
+    const imageUrl = img ? `data:${img.imageType};base64,${img.imageData}` : "";
 
     return (
         <Card
@@ -24,15 +22,6 @@ const ProductCard = ({ product }: { product: any }) => {
                             style={{ width: 300, height: 300, objectFit: "cover", borderRadius: 8 }}
                         />
                     </Link>
-
-                    <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button
-                            type="text"
-                            className="w-full !bg-teal-700 !text-white py-2 text-center text-sm font-medium rounded-none hover:bg-teal-800 transition"
-                        >
-                            Add to Cart
-                        </Button>
-                    </div>
                 </div>
             }
         >

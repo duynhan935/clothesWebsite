@@ -1,86 +1,163 @@
-import { Button, Divider } from "antd";
-import ao1 from "../../assets/ao1.svg?url";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Button, Divider, Spin } from "antd";
+import { useEffect, useState } from "react";
+import { getAllProductDetailsById, getCartItems, removeItemFromCart } from "../../services/api.services";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../redux/store/store";
+import { setCart, removeItem } from "../../redux/store/cartSlice";
+import { Link } from "react-router-dom";
 
-interface CartItem {
+export interface ProductImage {
+    imageName: string;
+    imageType: string;
+    imageData: string;
+}
+
+export interface CartItem {
     id: number;
-    name: string;
-    cartId: string;
-    price: number;
-    img: string;
+    quantity: number;
+    img?: string;
+    name?: string;
+    price?: number;
+    color?: string;
+    stockQuantity?: number;
+    cartId?: number;
 }
 
 const Cart = () => {
-    const cartItems: CartItem[] = [
-        {
-            id: 1,
-            name: "Modern Green Sweater",
-            cartId: "12345678910",
-            price: 60,
-            img: ao1,
-        },
-        {
-            id: 2,
-            name: "Corporate Office Shoes",
-            cartId: "12345678911",
-            price: 399,
-            img: ao1,
-        },
-        {
-            id: 3,
-            name: "Women Hand Bags",
-            cartId: "12345678912",
-            price: 123,
-            img: ao1,
-        },
-    ];
+    const dispatch = useDispatch<AppDispatch>();
+    const cartItems = useSelector((state: RootState) => state.cart.items);
+    const [loading, setLoading] = useState<boolean>(true);
 
-    const total: number = cartItems.reduce((sum, item) => sum + item.price, 0);
+    useEffect(() => {
+        const fetchCartItems = async () => {
+            try {
+                const token = localStorage.getItem("accessToken");
+                if (!token) {
+                    console.error("No token found in local storage.");
+                    return;
+                }
+
+                const response = await getCartItems();
+                const cartRaw = response.data;
+
+                const fullItems: CartItem[] = await Promise.all(
+                    cartRaw.map(async (item: any) => {
+                        try {
+                            const productRes = await getAllProductDetailsById(item.productDetailsId);
+                            const productDetails = productRes.data;
+                            const firstImage = productDetails.images?.[0];
+                            const imageUrl = firstImage
+                                ? `data:${firstImage.imageType};base64,${firstImage.imageData}`
+                                : "https://via.placeholder.com/64";
+
+                            return {
+                                id: productDetails.id,
+                                quantity: item.quantity,
+                                img: imageUrl,
+                                name: productDetails.name || "Unnamed Product",
+                                price: productDetails.price || 0,
+                                color: productDetails.color || "N/A",
+                                stockQuantity: productDetails.quantity || 0,
+                                cartId: item.cartId || productDetails.id,
+                            };
+                        } catch (err) {
+                            console.error("Failed to fetch product details:", err);
+                            return {
+                                id: -1,
+                                quantity: item.quantity,
+                                name: "Error loading product",
+                                price: 0,
+                                img: "https://via.placeholder.com/64",
+                                cartId: item.cartId || -1,
+                            };
+                        }
+                    })
+                );
+
+                dispatch(setCart(fullItems));
+            } catch (error) {
+                console.error("Error loading cart:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCartItems();
+    }, [dispatch]);
+
+    const handleRemoveItem = async (cartId: number) => {
+        try {
+            await removeItemFromCart(cartId);
+            dispatch(removeItem(cartId));
+        } catch (error) {
+            console.error("Error removing item from cart:", error);
+        }
+    };
+
+    const total = cartItems!.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0);
+
+    if (loading) return <Spin fullscreen />;
 
     return (
-        <div className="flex flex-row gap-10 p-4">
-            <div className="flex-1 max-h-screen overflow-y-auto pr-10">
-                {cartItems.map((item, index) => (
-                    <div key={item.id} className="mb-4">
-                        <div className="flex justify-between text-sm text-gray-600 mb-1">
-                            <span>Item {index + 1}</span>
-                            <div>
-                                <a className="!text-gray-400 hover:underline cursor-pointer">Edit</a> |{" "}
-                                <a className="!text-gray-400 hover:underline cursor-pointer">Remove</a>
+        <div className="flex flex-col md:flex-row gap-10 p-6 bg-gray-50 min-h-screen">
+            <div className="flex-1 max-h-screen overflow-y-auto pr-4">
+                {cartItems!.length === 0 ? (
+                    <div className="text-center text-gray-500 mt-20 text-lg">Your cart is empty.</div>
+                ) : (
+                    cartItems!.map((item, index) => (
+                        <div key={item.cartId ?? item.id} className="cartItem mb-4">
+                            <div className="flex justify-between text-sm text-gray-500 mb-2">
+                                <span>Item {index + 1}</span>
+                                <div className="flex gap-3 items-center">
+                                    <Link to={`/product/${item.id}`} className="text-blue-600 hover:underline text-sm">
+                                        View
+                                    </Link>
+                                    <span
+                                        title="Remove item"
+                                        onClick={() => handleRemoveItem(item.cartId!)}
+                                        className="removeBtn cursor-pointer"
+                                    >
+                                        🗑️
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="flex gap-4 items-center">
+                                <img src={item.img} alt={item.name} className="productImage" />
+                                <div>
+                                    <div className="font-medium text-base">{item.name}</div>
+                                    <div className="itemMeta">Color: {item.color}</div>
+                                    <div className="itemMeta">In stock: {item.stockQuantity}</div>
+                                    <div className="text-base font-semibold mt-2">
+                                        {(item.price || 0).toLocaleString()} VND x {item.quantity}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div className="flex gap-3 items-center">
-                            <img
-                                src={item.img}
-                                alt={item.name}
-                                className="w-16 h-16 object-cover border border-gray-300"
-                            />
-                            <div>
-                                <div className="font-medium text-base">{item.name}</div>
-                                <div className="text-xs text-gray-500">Cart ID: {item.cartId}</div>
-                                <div className="text-base font-bold mt-1">${item.price}</div>
-                            </div>
-                        </div>
-                        <Divider className="my-3" />
-                    </div>
-                ))}
+                    ))
+                )}
             </div>
 
-            <div className="w-1/3 pl-6 border-l border-gray-200">
-                <div className="flex justify-between font-semibold text-lg mb-3">
-                    <span>Cart order total ({cartItems.length})</span>
-                    <span>${total}</span>
+            <div className="w-full md:w-1/3 cartSummary">
+                <div className="bg-white p-6 rounded-lg shadow-md sticky top-6">
+                    <div className="flex justify-between items-center text-base font-semibold mb-4  ">
+                        <span className="text-gray-800">Cart order total ({cartItems!.length})</span>
+                        <span className="text-right text-blue-600 text-lg font-bold ml-4">
+                            {total.toLocaleString()} VND
+                        </span>
+                    </div>
+
+                    <div className="text-sm text-gray-600 mb-6">
+                        🎉 You get <span className="text-green-600 font-medium">Free Shipping</span>!
+                        <br />
+                        <span className="text-xs text-gray-400">
+                            Excludes furniture, mattresses & other exclusions apply.
+                        </span>
+                    </div>
+                    <Button type="primary" block size="large" className="rounded-md">
+                        Proceed to Checkout
+                    </Button>
                 </div>
-                <div className="text-sm text-gray-700 mb-4">
-                    Congrats! You get <span className="text-green-600 font-medium">Free Shipping</span>.
-                    <br />
-                    <small className="text-xs text-gray-500">
-                        Excludes furniture, mattresses & other exclusions apply.
-                    </small>
-                </div>
-                <Button type="primary" block className="!mb-3">
-                    View Cart
-                </Button>
-                <Button block>Check Out</Button>
             </div>
         </div>
     );
