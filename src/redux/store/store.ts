@@ -4,6 +4,7 @@ import loginReducer from "./loginSlice";
 import registerReducer from "./registerSlice";
 import profileSliceReducer from "./profileSlice";
 import productSliceReducer from "./productsSlice";
+import authSliceReducer from "./authSlice";
 
 export const store = configureStore({
     reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
         register: registerReducer,
         account: profileSliceReducer,
         product: productSliceReducer,
+        auth: authSliceReducer,
     },
 });
 

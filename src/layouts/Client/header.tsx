@@ -1,15 +1,13 @@
 import { NavLink, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { openCart } from "../../redux/store/cartSlice";
+import { clearCart, openCart } from "../../redux/store/cartSlice";
 import { openLogin } from "../../redux/store/loginSlice";
 import { openRegister } from "../../redux/store/registerSlice";
 import type { RootState, AppDispatch } from "../../redux/store/store";
 import { Avatar, Dropdown, Menu } from "antd";
 import { logoutUser } from "../../services/auth.services";
 
-const navItems = [
-    { label: "Admin", to: "/admin" },
-];
+const navItems = [{ label: "Admin", to: "/admin" }];
 
 const Header = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -107,7 +105,13 @@ const Header = () => {
                                     </Menu.SubMenu>
 
                                     <Menu.Divider />
-                                    <Menu.Item key="logout" onClick={() => logoutUser(dispatch)}>
+                                    <Menu.Item
+                                        key="logout"
+                                        onClick={() => {
+                                            dispatch(clearCart());
+                                            logoutUser(dispatch);
+                                        }}
+                                    >
                                         Logout
                                     </Menu.Item>
                                 </Menu>

@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
-import { addProductToCart, getAllProductDetailsById, getProductById } from "../../services/api.services";
+import { addProductToCart, getAllProductDetailsById, getCartItems, getProductById } from "../../services/api.services";
 import { Button, InputNumber, message, Modal, Spin } from "antd";
 import Products from "../../components/Client/Products";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../../redux/store/store";
-import { addItemToCart, closeCart } from "../../redux/store/cartSlice";
+import { addItemToCart, closeCart, setCart } from "../../redux/store/cartSlice";
 import { closeLogin } from "../../redux/store/loginSlice";
 import { closeRegister } from "../../redux/store/registerSlice";
 import RegisterPage from "../../auth/register";
@@ -72,7 +73,7 @@ const ProductDetailPage = () => {
                 const res = await getProductById(id);
                 const data: Product = res.data;
                 setProduct(data);
-
+                dispatch(closeCart());
                 if (data.productDetailsList?.length > 0) {
                     const firstDetail = data.productDetailsList[0];
                     setSelectedColor(firstDetail.color);
@@ -136,6 +137,35 @@ const ProductDetailPage = () => {
                     stockQuantity: quantityAvailable,
                 })
             );
+
+            const response = await getCartItems();
+            const cartRaw = response.data;
+
+            const fullItems = await Promise.all(
+                cartRaw.map(async (item: any) => {
+                    const productRes = await getAllProductDetailsById(item.productDetailsId);
+                    const productDetails = productRes.data;
+                    const firstImage = productDetails.images?.[0];
+                    const imageUrl = firstImage
+                        ? `data:${firstImage.imageType};base64,${firstImage.imageData}`
+                        : "https://via.placeholder.com/64";
+
+                    return {
+                        id: productDetails.id,
+                        quantity: item.quantity,
+                        img: imageUrl,
+                        name: productDetails.name || "Unnamed Product",
+                        price: productDetails.price || 0,
+                        color: productDetails.color || "N/A",
+                        stockQuantity: productDetails.quantity || 0,
+                        cartId: productDetails.id,
+                        productId: productDetails.productId,
+                    };
+                })
+            );
+
+            dispatch(setCart(fullItems));
+
             message.success("Product added to cart successfully!");
         } catch (error) {
             console.error("Error adding product to cart:", error);

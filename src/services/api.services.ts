@@ -177,3 +177,11 @@ export const getCartItems = () => {
 export const getAllProductDetailsById = (id: number) => {
     return axios.get(`api/product/product-details/infor/${id}`);
 };
+
+export const createOrder = () => {
+    return axios.post(`api/order/checkout`, {}, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+    });
+}

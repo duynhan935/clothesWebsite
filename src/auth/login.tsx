@@ -22,6 +22,7 @@ export default function LoginPage() {
             const userData = getUserDetails(res.data.accessToken);
 
             dispatch(doGetProfileAction((await userData).data));
+
             dispatch(closeLogin());
             form.resetFields();
         } catch (error: any) {

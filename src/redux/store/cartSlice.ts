@@ -9,6 +9,7 @@ export interface CartItem {
     color?: string;
     stockQuantity?: number;
     cartId?: number;
+    productId?: number;
 }
 
 interface CartState {
