@@ -2,10 +2,11 @@
 import { useState } from "react";
 import { createOrder, getUserDetails, payment } from "../../../services/api.services";
 import type { CartItem } from "../Cart";
-import { Button, message } from "antd";
 import { clearCart } from "../../../redux/store/cartSlice";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../../redux/store/store";
+import { Button, message, Card, Typography, Divider, Space } from "antd";
+const { Title, Text } = Typography;
 
 interface StepConfirmationProps {
     cartItems: CartItem[];
@@ -58,22 +59,41 @@ const StepConfirmation = ({ totalPrice, onNext, onPrev, setOrderData }: StepConf
     };
 
     return (
-        <div>
-            <h3>Xác nhận đơn hàng</h3>
-            {!orderId ? (
-                <Button type="primary" onClick={handleCreateOrder} loading={loading}>
-                    Tạo đơn hàng
-                </Button>
-            ) : (
-                <>
-                    <p>Mã đơn hàng: {orderId}</p>
-                    <p>Tổng tiền: ${totalPrice}</p>
-                    <Button onClick={onPrev}>Quay lại</Button>
-                    <Button type="primary" onClick={handlePayment}>
-                        Thanh toán
-                    </Button>
-                </>
-            )}
+        <div style={{ maxWidth: 600, margin: "0 auto" }}>
+            <Title level={3} style={{ textAlign: "center" }}>
+                Xác nhận đơn hàng
+            </Title>
+
+            <Card bordered style={{ marginTop: 24 }}>
+                {!orderId ? (
+                    <>
+                        <Divider />
+                        <div style={{ textAlign: "center" }}>
+                            <Button type="primary" size="large" onClick={handleCreateOrder} loading={loading}>
+                                Tạo đơn hàng
+                            </Button>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <Text strong>Mã đơn hàng:</Text>
+                        <Text> {orderId}</Text>
+                        <br />
+                        <Text strong>Tổng tiền:</Text>
+                        <Text type="danger" style={{ fontSize: 16 }}>
+                            {" "}
+                            {totalPrice.toLocaleString()} đ
+                        </Text>
+                        <Divider />
+                        <Space style={{ justifyContent: "end", display: "flex" }}>
+                            <Button onClick={onPrev}>Quay lại</Button>
+                            <Button type="primary" onClick={handlePayment}>
+                                Thanh toán
+                            </Button>
+                        </Space>
+                    </>
+                )}
+            </Card>
         </div>
     );
 };

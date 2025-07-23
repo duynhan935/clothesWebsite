@@ -41,6 +41,7 @@ const Cart = () => {
 
                 const response = await getCartItems();                
                 const cartRaw = response.data;
+                
 
                 const fullItems: CartItem[] = await Promise.all(
                     cartRaw.map(async (item: any) => {
