@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button } from "antd";
 import { useEffect } from "react";
 import { getAllProductDetailsById, getCartItems, removeItemFromCart } from "../../services/api.services";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../redux/store/store";
-import { setCart, removeItem } from "../../redux/store/cartSlice";
+import { setCart, removeItem, closeCart } from "../../redux/store/cartSlice";
 import { Link } from "react-router-dom";
 
 export interface ProductImage {
@@ -40,7 +39,7 @@ const Cart = () => {
                     return;
                 }
 
-                const response = await getCartItems();
+                const response = await getCartItems();                
                 const cartRaw = response.data;
 
                 const fullItems: CartItem[] = await Promise.all(
@@ -95,7 +94,6 @@ const Cart = () => {
             console.error("Error removing item from cart:", error);
         }
     };
-
 
     const total = cartItems!.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0);
 
@@ -163,9 +161,9 @@ const Cart = () => {
                             Excludes furniture, mattresses & other exclusions apply.
                         </span>
                     </div>
-                    <Button type="primary" block size="large" className="rounded-md">
+                    <Link type="primary" className="rounded-md" to={isAuthenticated ? "/order" : "/login"} onClick={() => dispatch(closeCart())}>
                         Proceed to Checkout
-                    </Button>
+                    </Link>
                 </div>
             </div>
         </div>

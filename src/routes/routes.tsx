@@ -16,6 +16,7 @@ import OrderManagement from "../pages/Admin/OrderManagerment";
 import Dashboard from "../pages/Admin/Dashboard";
 import ProductDetailPage from "../pages/Admin/ProductDetails";
 import NotFoundPage from "../pages/Error/ErrorPage";
+import Order from "../components/Client/Order/Order";
 
 export const router = createBrowserRouter([
     // ---------- Client ----------
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
         children: [
             { index: true, element: <HomePage /> },
             { path: "/product/:id", element: <ProductDetailsPage /> },
+            { path: "/order", element: <Order /> },
         ],
     },
 

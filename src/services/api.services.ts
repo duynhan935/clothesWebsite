@@ -179,9 +179,17 @@ export const getAllProductDetailsById = (id: number) => {
 };
 
 export const createOrder = () => {
-    return axios.post(`api/order/checkout`, {}, {
+    return axios.post(`api/order/payment`, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
     });
-}
+};
+
+export const payment = (data: { amount: number; orderInfo: string; orderId: string }) => {
+    return axios.post(`api/payment`, data, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+    });
+};
