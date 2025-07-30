@@ -32,7 +32,7 @@ const cartSlice = createSlice({
         closeCart: (state) => {
             state.isCartOpen = false;
         },
-        setCart: (state,action:PayloadAction<CartItem[]>) => {
+        setCart: (state, action: PayloadAction<CartItem[]>) => {
             state.items = action.payload;
         },
         addItemToCart: (state, action: PayloadAction<CartItem>) => {
@@ -40,12 +40,14 @@ const cartSlice = createSlice({
         },
         removeItem: (state, action: PayloadAction<number>) => {
             if (state.items) {
-                state.items = state.items.filter(item => item.cartId !== action.payload);
+                state.items = state.items.filter((item) => item.cartId !== action.payload);
             }
         },
         clearCart: (state) => {
+            console.log("clear cartr");
+
             state.items = [];
-        }
+        },
     },
 });
 

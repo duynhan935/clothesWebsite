@@ -1,8 +1,6 @@
-/* eslint-disable no-irregular-whitespace */
 import { useState, useEffect } from "react";
 import { Button } from "antd";
 import ProductCard from "./ProductCard";
-
 import { getAllProducts } from "../../services/api.services";
 
 interface Product {
@@ -24,9 +22,19 @@ interface ProductsProps {
     initialVisible?: number;
     increment?: number;
     excludedId?: string;
+    searchTerm?: string;
+    sortOption?: string;
+    selectedCategory?: string | null;
 }
 
-export default function Products({ initialVisible = 16, increment = 4, excludedId }: ProductsProps) {
+export default function Products({
+    initialVisible = 16,
+    increment = 4,
+    excludedId,
+    searchTerm = "",
+    sortOption = "relevancy",
+    selectedCategory = null,
+}: ProductsProps) {
     const [allProducts, setAllProducts] = useState<Product[]>([]);
     const [visibleCount, setVisibleCount] = useState(initialVisible);
 
@@ -52,19 +60,26 @@ export default function Products({ initialVisible = 16, increment = 4, excludedI
     const handleLoadMore = () => setVisibleCount((v) => v + increment);
     const handleLoadLess = () => setVisibleCount((v) => Math.max(initialVisible, v - increment));
 
-    const hasMore = visibleCount < allProducts.length;
+    const filteredProducts = allProducts
+        .filter((product) => product.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        .filter((product) => (selectedCategory ? product.category === selectedCategory : true))
+        .sort((a, b) => {
+            if (sortOption === "price_low_high") return a.price - b.price;
+            if (sortOption === "price_high_low") return b.price - a.price;
+            return 0;
+        });
+
+    const hasMore = visibleCount < filteredProducts.length;
     const hasLess = visibleCount > initialVisible;
 
     return (
         <>
-            {/* Grid lưới sản phẩm */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-                {allProducts.slice(0, visibleCount).map((product) => (
+                {filteredProducts.slice(0, visibleCount).map((product) => (
                     <ProductCard key={product.id} product={product} />
                 ))}
             </div>
 
-            {/* Các nút điều khiển */}
             <div className="flex justify-center gap-4 mt-10">
                 {hasMore && (
                     <Button size="large" onClick={handleLoadMore} className="!bg-[#018294] !text-[#fff]">

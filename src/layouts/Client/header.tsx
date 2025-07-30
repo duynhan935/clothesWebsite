@@ -41,7 +41,7 @@ const Header = () => {
                         />
                     </svg>
 
-                    <span className="text-lg font-medium text-gray-900">"OoO"</span>
+                    <span className="text-lg font-medium text-gray-900">HOME</span>
                 </Link>
 
                 {/* Main nav  */}

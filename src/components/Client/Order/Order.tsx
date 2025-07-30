@@ -5,10 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCart } from "../../../redux/store/cartSlice";
 import StepCart from "./Step.Cart";
 import StepConfirmation from "./Step.Confirmation";
-import StepSuccess from "./Step.Success";
 import type { RootState } from "../../../redux/store/store";
 import type { AppDispatch } from "../../../redux/store/store";
-
 
 import { closeCart } from "../../../redux/store/cartSlice";
 import Login from "../../../auth/login";
@@ -29,14 +27,12 @@ const Order = () => {
     const isRegisterOpen = useSelector((state: RootState) => state.register.isRegisterOpen);
 
     const [current, setCurrent] = useState(0);
-    const [orderData, setOrderData] = useState<any>(null);
 
     const totalPrice = cartItems.reduce((acc, item) => acc + (item.price || 0) * item.quantity, 0);
 
     useEffect(() => {
         const fetchCart = async () => {
-            try {   
-
+            try {
                 const enrichedItems = await fetchAndEnrichCart();
 
                 dispatch(setCart(enrichedItems));
@@ -65,13 +61,8 @@ const Order = () => {
                     totalPrice={totalPrice}
                     onNext={next}
                     onPrev={prev}
-                    setOrderData={setOrderData}
                 />
             ),
-        },
-        {
-            title: "Thành công",
-            content: <StepSuccess orderData={orderData} />,
         },
     ];
 
