@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCart, openCart } from "../../redux/store/cartSlice";
@@ -7,7 +6,6 @@ import { openRegister } from "../../redux/store/registerSlice";
 import type { RootState, AppDispatch } from "../../redux/store/store";
 import { Avatar, Dropdown, Menu } from "antd";
 import { logoutUser } from "../../services/auth.services";
-import { getCartItems } from "../../services/api.services";
 
 const navItems = [{ label: "Admin Dashboard", to: "/admin" }];
 
@@ -20,27 +18,11 @@ const Header = () => {
     const address = useSelector((state: RootState) => state.account.user.address);
     const role = useSelector((state: RootState) => state.account.user.role);
 
-    const [cartCount, setCartCount] = useState(0);
-    const displayCount = cartCount > 9 ? "9+" : cartCount;
+    const cartItems = useSelector((state: RootState) => state.cart.items || []);
+
+    const displayCount = cartItems.length > 9 ? "9+" : cartItems.length;
 
     const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
-
-    useEffect(() => {
-        const fetchCartCount = async () => {
-            try {
-                if (!isAuthenticated) return setCartCount(0);
-                const response = await getCartItems();
-                const cartRaw = response.data;
-
-                setCartCount(cartRaw.length);
-            } catch (err) {
-                console.error("Error fetching cart:", err);
-                setCartCount(0);
-            }
-        };
-
-        fetchCartCount();
-    }, [isAuthenticated]);
 
     return (
         <header>
@@ -108,7 +90,7 @@ const Header = () => {
                                 d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"
                             />
                         </svg>
-                        {cartCount > 0 && (
+                        {cartItems.length > 0 && (
                             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full">
                                 {displayCount}
                             </span>
@@ -135,7 +117,6 @@ const Header = () => {
                                         key="logout"
                                         onClick={() => {
                                             dispatch(clearCart());
-                                            setCartCount(0); // reset cart count UI
                                             logoutUser(dispatch);
                                         }}
                                     >
