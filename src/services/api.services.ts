@@ -155,7 +155,11 @@ export const deleteUser = (id: string) => {
 };
 
 export const addProductToCart = (data: { quantity: number; productDetailsId: string }) => {
-    return axios.post(`api/order`, data);
+    return axios.post(`api/order`, data, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+    });
 };
 
 export const removeItemFromCart = (cartId: number) => {

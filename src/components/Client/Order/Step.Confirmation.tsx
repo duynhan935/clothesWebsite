@@ -2,9 +2,6 @@
 import { useState } from "react";
 import { createOrder, getUserDetails, payment } from "../../../services/api.services";
 import type { CartItem } from "../Cart";
-import { clearCart } from "../../../redux/store/cartSlice";
-import { useDispatch } from "react-redux";
-import type { AppDispatch } from "../../../redux/store/store";
 import { Button, message, Card, Typography, Divider, Space } from "antd";
 const { Title, Text } = Typography;
 import { useNavigate } from "react-router-dom";
@@ -18,7 +15,6 @@ interface StepConfirmationProps {
 const StepConfirmation = ({ totalPrice, onPrev }: StepConfirmationProps) => {
     const [orderId, setOrderId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
 
     const handleCreateOrder = async () => {
@@ -47,18 +43,12 @@ const StepConfirmation = ({ totalPrice, onPrev }: StepConfirmationProps) => {
                 orderInfo: `${userEmail}`,
             });
 
-            console.log("Payment response:", res.data);
-
-            message.success("Thanh toán thành công!");
-            dispatch(clearCart());
-
             navigate("/");
 
             setTimeout(() => {
                 window.location.href = res.data;
             }, 500);
         } catch (err) {
-            message.error("Thanh toán thất bại");
             console.error(err);
         }
     };

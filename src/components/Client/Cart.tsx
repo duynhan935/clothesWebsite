@@ -39,9 +39,9 @@ const Cart = () => {
                     return;
                 }
 
-                const response = await getCartItems();                
+                const response = await getCartItems();
                 const cartRaw = response.data;
-                
+
 
                 const fullItems: CartItem[] = await Promise.all(
                     cartRaw.map(async (item: any) => {
@@ -162,7 +162,12 @@ const Cart = () => {
                             Excludes furniture, mattresses & other exclusions apply.
                         </span>
                     </div>
-                    <Link type="primary" className="rounded-md" to={isAuthenticated ? "/order" : "/login"} onClick={() => dispatch(closeCart())}>
+                    <Link
+                        type="primary"
+                        className="rounded-md"
+                        to={isAuthenticated ? "/order" : "/login"}
+                        onClick={() => dispatch(closeCart())}
+                    >
                         Proceed to Checkout
                     </Link>
                 </div>

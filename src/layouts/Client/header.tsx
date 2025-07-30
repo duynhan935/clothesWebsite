@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCart, openCart } from "../../redux/store/cartSlice";
@@ -6,8 +7,9 @@ import { openRegister } from "../../redux/store/registerSlice";
 import type { RootState, AppDispatch } from "../../redux/store/store";
 import { Avatar, Dropdown, Menu } from "antd";
 import { logoutUser } from "../../services/auth.services";
+import { getCartItems } from "../../services/api.services";
 
-const navItems = [{ label: "Admin", to: "/admin" }];
+const navItems = [{ label: "Admin Dashboard", to: "/admin" }];
 
 const Header = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -18,7 +20,27 @@ const Header = () => {
     const address = useSelector((state: RootState) => state.account.user.address);
     const role = useSelector((state: RootState) => state.account.user.role);
 
+    const [cartCount, setCartCount] = useState(0);
+    const displayCount = cartCount > 9 ? "9+" : cartCount;
+
     const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
+
+    useEffect(() => {
+        const fetchCartCount = async () => {
+            try {
+                if (!isAuthenticated) return setCartCount(0);
+                const response = await getCartItems();
+                const cartRaw = response.data;
+
+                setCartCount(cartRaw.length);
+            } catch (err) {
+                console.error("Error fetching cart:", err);
+                setCartCount(0);
+            }
+        };
+
+        fetchCartCount();
+    }, [isAuthenticated]);
 
     return (
         <header>
@@ -40,14 +62,13 @@ const Header = () => {
                             clipRule="evenodd"
                         />
                     </svg>
-
                     <span className="text-lg font-medium text-gray-900">HOME</span>
                 </Link>
 
                 {/* Main nav  */}
                 <nav className="hidden lg:flex items-center space-x-8">
                     {navItems
-                        .filter((item) => item.label !== "Admin" || role === "ADMIN")
+                        .filter((item) => item.label !== "Admin Dashboard" || role === "ADMIN")
                         .map(({ label, to }) => (
                             <NavLink
                                 key={to}
@@ -87,6 +108,11 @@ const Header = () => {
                                 d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"
                             />
                         </svg>
+                        {cartCount > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full">
+                                {displayCount}
+                            </span>
+                        )}
                     </div>
 
                     {isAuthenticated ? (
@@ -109,6 +135,7 @@ const Header = () => {
                                         key="logout"
                                         onClick={() => {
                                             dispatch(clearCart());
+                                            setCartCount(0); // reset cart count UI
                                             logoutUser(dispatch);
                                         }}
                                     >
@@ -125,15 +152,12 @@ const Header = () => {
                         </Dropdown>
                     ) : (
                         <>
-                            {/* Login */}
                             <div
                                 className="hidden lg:inline text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors cursor-pointer"
                                 onClick={() => dispatch(openLogin())}
                             >
                                 Login
                             </div>
-
-                            {/* Register */}
                             <div
                                 className="inline-flex items-center rounded-full bg-[#2D2D2D] px-8 py-4 text-sm font-semibold text-[#F2EDE6] shadow hover:opacity-90 transition-opacity cursor-pointer"
                                 onClick={() => dispatch(openRegister())}
