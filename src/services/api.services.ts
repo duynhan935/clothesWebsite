@@ -79,6 +79,7 @@ export const createProductDetail = ({
         productId: string;
         color: string;
         quantity: number;
+        size: string;
     };
     images?: File[];
 }) => {
@@ -105,6 +106,7 @@ export const updateProductDetail = (
             productId: string;
             color: string;
             quantity: number;
+            size: string;
         };
         images?: File[];
     }
@@ -154,24 +156,33 @@ export const deleteUser = (id: string) => {
     return axios.delete(`api/users/${id}`);
 };
 
-export const addProductToCart = (data: { quantity: number; productDetailsId: string }) => {
-    return axios.post(`api/order`, data, {
+export const addProductToCart = (id: string, data: { quantity: number; productDetailsId: string }) => {
+    return axios.post(`api/order/${id}`, data, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
     });
 };
 
-export const removeItemFromCart = (cartId: number) => {
-    return axios.delete(`api/order/${cartId}`, {
+export const removeItemFromCart = (cartId: number, userId: string) => {
+    return axios.request({
+        method: "DELETE",
+        url: `api/order/${cartId}`,
+        data: {
+            userId: userId,
+        },
         headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            "Content-Type": "application/json",
         },
     });
 };
 
-export const getCartItems = () => {
-    return axios.get(`api/order`, {
+export const getCartItems = (userid: string) => {
+    return axios.get(`/api/order`, {
+        params: {
+            userid: userid,
+        },
         headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -182,12 +193,17 @@ export const getAllProductDetailsById = (id: number) => {
     return axios.get(`api/product/product-details/infor/${id}`);
 };
 
-export const createOrder = () => {
-    return axios.post(`api/order/payment`, {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-    });
+export const createOrder = (userId: string) => {
+    return axios.post(
+        `api/order/payment`,
+        { userId },
+        {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                "Content-Type": "application/json",
+            },
+        }
+    );
 };
 
 export const payment = (data: { amount: number; orderInfo: string; orderId: string }) => {

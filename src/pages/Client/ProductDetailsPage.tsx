@@ -56,6 +56,8 @@ const ProductDetailPage = () => {
     const isLoginOpen = useSelector((state: RootState) => state.login.isLoginOpen);
     const isRegisterOpen = useSelector((state: RootState) => state.register.isRegisterOpen);
 
+    const userId = useSelector((state: RootState) => state.account.user.id);
+
     const { id } = useParams();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -121,7 +123,7 @@ const ProductDetailPage = () => {
             return;
         }
         try {
-            await addProductToCart({
+            await addProductToCart(userId, {
                 quantity: quantityToBuy,
                 productDetailsId: selectedDetail.id.toString(),
             });
@@ -138,7 +140,7 @@ const ProductDetailPage = () => {
                 })
             );
 
-            const response = await getCartItems();
+            const response = await getCartItems(userId);
             const cartRaw = response.data;
 
             const fullItems = await Promise.all(

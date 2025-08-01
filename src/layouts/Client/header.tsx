@@ -1,28 +1,40 @@
 import { NavLink, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { clearCart, openCart } from "../../redux/store/cartSlice";
+import { clearCart, openCart, setCart } from "../../redux/store/cartSlice";
 import { openLogin } from "../../redux/store/loginSlice";
 import { openRegister } from "../../redux/store/registerSlice";
 import type { RootState, AppDispatch } from "../../redux/store/store";
 import { Avatar, Dropdown, Menu } from "antd";
 import { logoutUser } from "../../services/auth.services";
+import { useEffect } from "react";
+import { fetchAndEnrichCart } from "../../utils/cartUtils";
 
 const navItems = [{ label: "Admin Dashboard", to: "/admin" }];
 
 const Header = () => {
     const dispatch = useDispatch<AppDispatch>();
     const isAuthenticated = useSelector((state: RootState) => state.account.isAuthenticated);
-    const userName = useSelector((state: RootState) => state.account.user.username);
-    const email = useSelector((state: RootState) => state.account.user.email);
-    const phone = useSelector((state: RootState) => state.account.user.phone);
-    const address = useSelector((state: RootState) => state.account.user.address);
-    const role = useSelector((state: RootState) => state.account.user.role);
+    const user = useSelector((state: RootState) => state.account.user);
+    const { username, email, phone, address, role, id: userId } = user;
 
     const cartItems = useSelector((state: RootState) => state.cart.items || []);
-
     const displayCount = cartItems.length > 9 ? "9+" : cartItems.length;
 
     const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
+
+    useEffect(() => {
+        const fetchCart = async () => {
+            if (isAuthenticated && userId) {
+                try {
+                    const enriched = await fetchAndEnrichCart(userId);
+                    dispatch(setCart(enriched));
+                } catch (err) {
+                    console.error("Lỗi khi lấy giỏ hàng:", err);
+                }
+            }
+        };
+        fetchCart();
+    }, [isAuthenticated, userId, dispatch]);
 
     return (
         <header>
@@ -104,7 +116,7 @@ const Header = () => {
                                     <Menu.SubMenu key="profile" title="Profile">
                                         <Menu.Item key="userinfo" disabled>
                                             <div className="px-2 py-1 text-sm text-gray-800 space-y-2">
-                                                <p>👤 Username: {userName}</p>
+                                                <p>👤 Username: {username}</p>
                                                 <p>📧 Email: {email}</p>
                                                 <p>📞 Phone: {phone}</p>
                                                 <p>🏠 Address: {address}</p>
@@ -128,7 +140,7 @@ const Header = () => {
                             arrow
                         >
                             <Avatar style={{ backgroundColor: "#87d068", cursor: "pointer" }}>
-                                {getInitial(userName)}
+                                {getInitial(username)}
                             </Avatar>
                         </Dropdown>
                     ) : (

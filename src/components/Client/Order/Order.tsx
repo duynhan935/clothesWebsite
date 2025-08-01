@@ -25,6 +25,7 @@ const Order = () => {
     const isCartOpen = useSelector((state: RootState) => state.cart.isCartOpen);
     const isLoginOpen = useSelector((state: RootState) => state.login.isLoginOpen);
     const isRegisterOpen = useSelector((state: RootState) => state.register.isRegisterOpen);
+    const userId = useSelector((state: RootState) => state.account.user.id);
 
     const [current, setCurrent] = useState(0);
 
@@ -33,7 +34,7 @@ const Order = () => {
     useEffect(() => {
         const fetchCart = async () => {
             try {
-                const enrichedItems = await fetchAndEnrichCart();
+                const enrichedItems = await fetchAndEnrichCart(userId);
 
                 dispatch(setCart(enrichedItems));
             } catch (error) {
@@ -55,14 +56,7 @@ const Order = () => {
         },
         {
             title: "Xác nhận",
-            content: (
-                <StepConfirmation
-                    cartItems={cartItems}
-                    totalPrice={totalPrice}
-                    onNext={next}
-                    onPrev={prev}
-                />
-            ),
+            content: <StepConfirmation cartItems={cartItems} totalPrice={totalPrice} onNext={next} onPrev={prev} />,
         },
     ];
 

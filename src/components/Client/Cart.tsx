@@ -28,6 +28,7 @@ const Cart = () => {
     const dispatch = useDispatch<AppDispatch>();
     const cartItems = useSelector((state: RootState) => state.cart.items);
     const isAuthenticated = useSelector((state: RootState) => state.account.isAuthenticated);
+    const userId = useSelector((state: RootState) => state.account.user.id);
 
     useEffect(() => {
         const fetchCartItems = async () => {
@@ -39,9 +40,8 @@ const Cart = () => {
                     return;
                 }
 
-                const response = await getCartItems();
+                const response = await getCartItems(userId);
                 const cartRaw = response.data;
-
 
                 const fullItems: CartItem[] = await Promise.all(
                     cartRaw.map(async (item: any) => {
@@ -89,7 +89,7 @@ const Cart = () => {
 
     const handleRemoveItem = async (cartId: number) => {
         try {
-            await removeItemFromCart(cartId);
+            await removeItemFromCart(cartId, userId);
             dispatch(removeItem(cartId));
         } catch (error) {
             console.error("Error removing item from cart:", error);

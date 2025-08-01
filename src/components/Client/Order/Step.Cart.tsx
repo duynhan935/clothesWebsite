@@ -3,8 +3,8 @@ import { Button, Divider, List, Typography, Image, Popconfirm, message } from "a
 import { DeleteOutlined } from "@ant-design/icons";
 import type { CartItem } from "../Cart";
 import { removeItemFromCart } from "../../../services/api.services";
-import type { AppDispatch } from "../../../redux/store/store";
-import { useDispatch } from "react-redux";
+import type { AppDispatch, RootState } from "../../../redux/store/store";
+import { useDispatch, useSelector } from "react-redux";
 import { removeItem, setCart } from "../../../redux/store/cartSlice";
 import { fetchAndEnrichCart } from "../../../utils/cartUtils";
 
@@ -18,13 +18,14 @@ interface StepCartProps {
 
 const StepCart = ({ cartItems, totalPrice, onNext }: StepCartProps) => {
     const dispatch = useDispatch<AppDispatch>();
+    const userId = useSelector((state: RootState) => state.account.user.id);
 
     const handleRemove = async (itemId: number) => {
         try {
-            await removeItemFromCart(itemId);
+            await removeItemFromCart(itemId, userId);
             message.success("Xóa sản phẩm khỏi giỏ hàng thành công!");
             dispatch(removeItem(itemId));
-            const enrichedItems = await fetchAndEnrichCart();
+            const enrichedItems = await fetchAndEnrichCart(userId);
             dispatch(setCart(enrichedItems));
         } catch (error) {
             console.error("Error removing item from cart:", error);

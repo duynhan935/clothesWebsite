@@ -23,6 +23,7 @@ interface ImageData {
 interface ProductDetail {
     id: number;
     color: string;
+    size: string;
     quantity: number;
     images?: ImageData[];
 }
@@ -51,7 +52,6 @@ const ProductDetailPage = () => {
     useEffect(() => {
         fetchProduct();
     }, [id]);
-    
 
     const onAddFinish = async (values: any) => {
         if (files.length === 0) {
@@ -64,6 +64,7 @@ const ProductDetailPage = () => {
                 product: {
                     productId: id!,
                     color: values.color,
+                    size: values.size,
                     quantity: values.quantity,
                 },
                 images: files,
@@ -85,6 +86,7 @@ const ProductDetailPage = () => {
             setEditFiles([]);
             editForm.setFieldsValue({
                 color: detail.color,
+                size: detail.size,
                 quantity: detail.quantity,
             });
             setIsEditModalVisible(true);
@@ -98,19 +100,22 @@ const ProductDetailPage = () => {
             if (!editingDetail) return;
 
             const oldColor = editingDetail.color;
+            const oldSize = editingDetail.size;
             const oldQuantity = editingDetail.quantity;
 
             const updatedProduct = {
                 productId: id!,
                 color: values.color,
+                size: values.size,
                 quantity: values.quantity,
             };
 
             const isColorChanged = values.color !== oldColor;
+            const isSizeChanged = values.size !== oldSize;
             const isQuantityChanged = values.quantity !== oldQuantity;
             const isImageChanged = editFiles.length > 0;
 
-            if (!isColorChanged && !isQuantityChanged && !isImageChanged) {
+            if (!isColorChanged && !isSizeChanged && !isQuantityChanged && !isImageChanged) {
                 message.info("No changes detected");
                 return;
             }
@@ -157,6 +162,11 @@ const ProductDetailPage = () => {
             title: "Color",
             dataIndex: "color",
             key: "color",
+        },
+        {
+            title: "Size",
+            dataIndex: "size",
+            key: "size",
         },
         {
             title: "Quantity",

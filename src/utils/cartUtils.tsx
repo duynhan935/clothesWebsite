@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// fetchAndEnrichCart.ts
 import { getCartItems, getAllProductDetailsById } from "../services/api.services";
-import type { CartItem } from "../components/Client/Cart"
+import type { CartItem } from "../components/Client/Cart";
 
-export const fetchAndEnrichCart = async (): Promise<CartItem[]> => {
-    const res = await getCartItems();
+export const fetchAndEnrichCart = async (userId: string): Promise<CartItem[]> => {
+    const res = await getCartItems(userId);
     const cartRaw = res.data;
 
     const enrichedItems: CartItem[] = await Promise.all(

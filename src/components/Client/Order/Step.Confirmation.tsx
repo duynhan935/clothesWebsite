@@ -5,6 +5,8 @@ import type { CartItem } from "../Cart";
 import { Button, message, Card, Typography, Divider, Space } from "antd";
 const { Title, Text } = Typography;
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../redux/store/store";
 interface StepConfirmationProps {
     cartItems: CartItem[];
     totalPrice: number;
@@ -15,12 +17,13 @@ interface StepConfirmationProps {
 const StepConfirmation = ({ totalPrice, onPrev }: StepConfirmationProps) => {
     const [orderId, setOrderId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const userId = useSelector((state: RootState) => state.account.user.id);
     const navigate = useNavigate();
 
     const handleCreateOrder = async () => {
         try {
             setLoading(true);
-            const res = await createOrder();
+            const res = await createOrder(userId);
 
             setOrderId(res.data.id);
             message.success("Tạo đơn hàng thành công");
