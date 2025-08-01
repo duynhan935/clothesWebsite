@@ -24,6 +24,7 @@ export interface ProductImage {
 export interface ProductDetail {
     id: number;
     color: string;
+    size?: string;
     quantity: number;
     images?: ProductImage[];
 }
@@ -41,6 +42,7 @@ export interface Product {
 export interface ProductDetailInput {
     productId: string;
     color: string;
+    size?: string;
     quantity: number;
 }
 
@@ -55,7 +57,6 @@ const ProductDetailPage = () => {
     const isCartOpen = useSelector((state: RootState) => state.cart.isCartOpen);
     const isLoginOpen = useSelector((state: RootState) => state.login.isLoginOpen);
     const isRegisterOpen = useSelector((state: RootState) => state.register.isRegisterOpen);
-
     const userId = useSelector((state: RootState) => state.account.user.id);
 
     const { id } = useParams();
@@ -76,6 +77,7 @@ const ProductDetailPage = () => {
                 const data: Product = res.data;
                 setProduct(data);
                 dispatch(closeCart());
+
                 if (data.productDetailsList?.length > 0) {
                     const firstDetail = data.productDetailsList[0];
                     setSelectedColor(firstDetail.color);
@@ -102,7 +104,6 @@ const ProductDetailPage = () => {
 
             if (detail) {
                 setQuantityAvailable(detail.quantity);
-
                 const firstImg = detail.images?.[0];
                 if (firstImg) {
                     setSelectedImage(`data:${firstImg.imageType};base64,${firstImg.imageData}`);
@@ -127,6 +128,7 @@ const ProductDetailPage = () => {
                 quantity: quantityToBuy,
                 productDetailsId: selectedDetail.id.toString(),
             });
+
             const newItem = await getAllProductDetailsById(selectedDetail.id);
             dispatch(
                 addItemToCart({
@@ -167,7 +169,6 @@ const ProductDetailPage = () => {
             );
 
             dispatch(setCart(fullItems));
-
             message.success("Product added to cart successfully!");
         } catch (error) {
             console.error("Error adding product to cart:", error);
@@ -178,7 +179,7 @@ const ProductDetailPage = () => {
     return (
         <>
             <div className="p-10 flex flex-col md:flex-row gap-10">
-                {/* Left side: Images */}
+                {/* Left: Images */}
                 <div className="w-full md:w-1/2">
                     <div className="w-full h-[400px] mb-4">
                         <img src={selectedImage} alt="Main" className="w-full h-full object-cover rounded" />
@@ -204,7 +205,7 @@ const ProductDetailPage = () => {
                     </div>
                 </div>
 
-                {/* Right side: Info */}
+                {/* Right: Info */}
                 <div className="w-full md:w-1/2 space-y-6">
                     <div>
                         <h1 className="text-2xl font-bold">{product.name}</h1>
@@ -239,6 +240,14 @@ const ProductDetailPage = () => {
                         </div>
                     </div>
 
+                    {/* Size Display */}
+                    {selectedDetail?.size && (
+                        <div>
+                            <div className="mb-1 text-sm font-medium">Size:</div>
+                            <div>{selectedDetail.size}</div>
+                        </div>
+                    )}
+
                     <div>
                         <div className="mb-1 text-sm font-medium">Quantity:</div>
                         <InputNumber
@@ -247,7 +256,7 @@ const ProductDetailPage = () => {
                             value={quantityToBuy}
                             onChange={(val) => setQuantityToBuy(val || 1)}
                         />
-                        <span className="ml-2 text-gray-500"> (Available: {quantityAvailable})</span>
+                        <span className="ml-2 text-gray-500">(Available: {quantityAvailable})</span>
                     </div>
 
                     <div>
@@ -258,12 +267,13 @@ const ProductDetailPage = () => {
                 </div>
             </div>
 
-            {/* Similar products */}
+            {/* Similar Products */}
             <div className="flex justify-between items-center px-6">
                 <h2 className="text-xl font-bold mb-4">Similar products</h2>
             </div>
             <Products initialVisible={4} excludedId={product.id} />
 
+            {/* Modals */}
             <Modal open={isCartOpen} onCancel={() => dispatch(closeCart())} footer={null} width={800}>
                 <Cart />
             </Modal>
@@ -292,3 +302,4 @@ const ProductDetailPage = () => {
 };
 
 export default ProductDetailPage;
+    
