@@ -18,16 +18,28 @@ export default function LoginPage() {
                 localStorage.setItem("accessToken", res.data.accessToken);
                 localStorage.setItem("refreshToken", res.data.refreshToken);
             }
+
             message.success("Đăng nhập thành công!");
             const userData = getUserDetails(res.data.accessToken);
-
             dispatch(doGetProfileAction((await userData).data));
 
             dispatch(closeLogin());
             form.resetFields();
         } catch (error: any) {
-            console.error("Login failed:", error);
-            message.error("Đăng nhập thất bại!");
+            if (error.errorCode === "INACTIVATED_ACCOUNT") {
+                message.warning("Tài khoản chưa được xác thực. Đang gửi lại email xác thực...");
+                try {
+                    await resendConfirmationEmail(values.email);
+                    message.success("Đã gửi lại email xác thực. Vui lòng kiểm tra hộp thư.");
+                } catch (resendError) {
+                    console.error("Failed to resend confirmation email:", resendError);
+                    message.error("Không thể gửi lại email xác thực.");
+                }
+                } else {
+                    console.error("Login failed:", error);
+                    message.error("Đăng nhập thất bại!");
+                
+            }
         }
     };
 

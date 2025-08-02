@@ -123,7 +123,15 @@ const Header = () => {
                                             </div>
                                         </Menu.Item>
                                     </Menu.SubMenu>
-
+                                    <Menu.Divider />
+                                    <Menu.Item
+                                        key="history"
+                                        onClick={() => {
+                                            window.location.href = `/history`;
+                                        }}
+                                    >
+                                        Purchase History
+                                    </Menu.Item>
                                     <Menu.Divider />
                                     <Menu.Item
                                         key="logout"

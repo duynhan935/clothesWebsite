@@ -96,7 +96,7 @@ const ProductDetailPage = () => {
         };
 
         fetchProduct();
-    }, [id]);
+    }, []);
 
     useEffect(() => {
         if (product && selectedColor) {
@@ -302,4 +302,3 @@ const ProductDetailPage = () => {
 };
 
 export default ProductDetailPage;
-    

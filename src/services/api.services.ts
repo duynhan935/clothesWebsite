@@ -213,3 +213,21 @@ export const payment = (data: { amount: number; orderInfo: string; orderId: stri
         },
     });
 };
+
+export const resendConfirmationEmail = async (email: string) => {
+    return await axios.post(`http://localhost:8080/api/users/email`, null, {
+        params: { email },
+    });
+};
+
+export const getAllOrders = () => {
+    return axios.get(`api/order/list`);
+};
+
+export const getOrderById = (id: string) => {
+    return axios.get(`api/order/${id}`);
+};
+
+export const getOrderByUserId = (id: string) => {
+    return axios.get(`api/order/user/${id}`);
+};

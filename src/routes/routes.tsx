@@ -17,6 +17,7 @@ import Dashboard from "../pages/Admin/Dashboard";
 import ProductDetailPage from "../pages/Admin/ProductDetails";
 import NotFoundPage from "../pages/Error/ErrorPage";
 import Order from "../components/Client/Order/Order";
+import HistoryPage from "../pages/Client/HistoryPage";
 
 export const router = createBrowserRouter([
     // ---------- Client ----------
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
             { index: true, element: <HomePage /> },
             { path: "/product/:id", element: <ProductDetailsPage /> },
             { path: "/order", element: <Order /> },
+            { path: "/history", element: <HistoryPage /> },
         ],
     },
 

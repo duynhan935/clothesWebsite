@@ -47,6 +47,7 @@ const Cart = () => {
                     cartRaw.map(async (item: any) => {
                         try {
                             const productRes = await getAllProductDetailsById(item.productDetailsId);
+
                             const productDetails = productRes.data;
 
                             const firstImage = productDetails.images?.[0];
