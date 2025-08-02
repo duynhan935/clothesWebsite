@@ -100,7 +100,7 @@ const Cart = () => {
     const total = cartItems!.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0);
 
     return (
-        <div className="flex flex-col md:flex-row gap-6 p-6 bg-gray-50 min-h-screen">
+        <div className="flex flex-col md:flex-row gap-6 p-6 bg-gray-50 ">
             {/* Left: Cart Items */}
             <div className="w-full md:w-1/2 max-h-screen overflow-y-auto pr-2">
                 {cartItems!.length === 0 ? (
