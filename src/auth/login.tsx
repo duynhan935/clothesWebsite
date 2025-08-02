@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Form, Input, message } from "antd";
-import { getUserDetails, loginUser } from "../services/api.services";
+import { getUserDetails, loginUser, resendConfirmationEmail } from "../services/api.services";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../redux/store/store";
 import { closeLogin } from "../redux/store/loginSlice";
@@ -26,19 +26,56 @@ export default function LoginPage() {
             dispatch(closeLogin());
             form.resetFields();
         } catch (error: any) {
-            if (error.errorCode === "INACTIVATED_ACCOUNT") {
-                message.warning("Tài khoản chưa được xác thực. Đang gửi lại email xác thực...");
-                try {
-                    await resendConfirmationEmail(values.email);
-                    message.success("Đã gửi lại email xác thực. Vui lòng kiểm tra hộp thư.");
-                } catch (resendError) {
-                    console.error("Failed to resend confirmation email:", resendError);
-                    message.error("Không thể gửi lại email xác thực.");
-                }
-                } else {
-                    console.error("Login failed:", error);
-                    message.error("Đăng nhập thất bại!");
-                
+            const code = error?.errorCode;
+
+            switch (code) {
+                case "INACTIVATED_ACCOUNT":
+                    message.warning("Tài khoản chưa được xác thực. Đang gửi lại email xác thực...");
+                    try {
+                        await resendConfirmationEmail(values.email);
+                        message.success("Đã gửi lại email xác thực. Vui lòng kiểm tra hộp thư.");
+                    } catch (resendError) {
+                        console.error("Failed to resend confirmation email:", resendError);
+                        message.error("Không thể gửi lại email xác thực.");
+                    }
+                    break;
+
+                case "BAD_CREDENTIALS":
+                    message.error("Tên đăng nhập hoặc mật khẩu không đúng.");
+                    break;
+
+                case "AUTHENTICATION_ERROR":
+                    message.error("Lỗi xác thực. Vui lòng thử lại.");
+                    break;
+
+                case "RESOURCE_NOT_FOUND":
+                    message.error("Không tìm thấy tài nguyên liên quan. Vui lòng kiểm tra lại thông tin.");
+                    break;
+
+                case "VALIDATION_ERROR":
+                    message.error("Dữ liệu đầu vào không hợp lệ. Vui lòng kiểm tra lại biểu mẫu.");
+                    break;
+
+                case "Vi phạm ràng buộc trong sql (duplicate value, foreign key,...)":
+                    message.error("Tài khoản đã tồn tại hoặc dữ liệu bị trùng lặp.");
+                    break;
+
+                case "SQL_INTEGRITY_CONSTRAINT_VIOLATION":
+                    message.error("Dữ liệu không hợp lệ. Có thể đã vi phạm ràng buộc cơ sở dữ liệu.");
+                    break;
+
+                case "BAD_PAYMENT_REQUEST":
+                    message.error("Yêu cầu thanh toán không hợp lệ.");
+                    break;
+
+                case "INTERNAL_SERVER_ERROR":
+                    message.error("Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.");
+                    break;
+
+                default:
+                    console.error("Lỗi không xác định:", error);
+                    message.error(error?.message || "Đăng nhập thất bại! Vui lòng thử lại.");
+                    break;
             }
         }
     };
