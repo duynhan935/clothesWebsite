@@ -271,7 +271,7 @@ const ProductDetailPage = () => {
             <div className="flex justify-between items-center px-6">
                 <h2 className="text-xl font-bold mb-4">Similar products</h2>
             </div>
-            <Products initialVisible={4} excludedId={product.id} />
+            <Products initialVisible={5} excludedId={product.id} />
 
             {/* Modals */}
             <Modal open={isCartOpen} onCancel={() => dispatch(closeCart())} footer={null} width={800}>
