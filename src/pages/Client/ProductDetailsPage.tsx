@@ -96,7 +96,7 @@ const ProductDetailPage = () => {
         };
 
         fetchProduct();
-    }, []);
+    }, [id]);
 
     useEffect(() => {
         if (product && selectedColor) {
