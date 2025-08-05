@@ -15,9 +15,11 @@ import UserManagement from "../pages/Admin/UserManagerment";
 import OrderManagement from "../pages/Admin/OrderManagerment";
 import Dashboard from "../pages/Admin/Dashboard";
 import ProductDetailPage from "../pages/Admin/ProductDetails";
+import OrderDetails from "../pages/Admin/OrderDetails";
 import NotFoundPage from "../pages/Error/ErrorPage";
-import Order from "../components/Client/Order/Order";
+
 import HistoryPage from "../pages/Client/HistoryPage";
+import Order from "../components/Client/Order/Order";
 
 export const router = createBrowserRouter([
     // ---------- Client ----------
@@ -43,6 +45,7 @@ export const router = createBrowserRouter([
                     { path: "products", element: <ProductManagement /> },
                     { path: "users", element: <UserManagement /> },
                     { path: "orders", element: <OrderManagement /> },
+                    { path: "order/:id", element: <OrderDetails /> },
                     { path: "dashboard", element: <Dashboard /> },
                     { path: "product/:id", element: <ProductDetailPage /> },
                 ],

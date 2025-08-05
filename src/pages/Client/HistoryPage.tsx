@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getOrderByUserId, getAllProductDetailsById } from "../../services/api.services";
 import moment from "moment";
 import { Spin, Empty, Modal } from "antd";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../redux/store/store";
 import { closeCart } from "../../redux/store/cartSlice";
@@ -74,10 +75,10 @@ const HistoryPage = () => {
                                 return {
                                     ...p,
                                     ...detail,
+                                    quantity: p.quantity, 
                                 };
                             })
                         );
-
                         return {
                             id: order.id,
                             createdAt: order.createdAt,
@@ -126,16 +127,22 @@ const HistoryPage = () => {
                                 : "https://via.placeholder.com/64";
 
                             return (
-                                <div key={product.id} className="flex gap-4 items-center border-t pt-3 mt-3">
+                                <Link
+                                    key={product.id}
+                                    to={`/product/${product.productId}`}
+                                    className="flex gap-4 items-center border-t pt-3 mt-3 hover:bg-gray-50 transition-colors rounded p-2 -m-2"
+                                >
                                     <img src={imageUrl} alt={product.name} className="w-16 h-16 object-cover rounded" />
                                     <div className="flex flex-col">
-                                        <span className="font-medium">{product.name}</span>
+                                        <span className="font-medium text-blue-600 hover:text-blue-800">
+                                            {product.name}
+                                        </span>
                                         <span className="text-sm text-gray-600">
                                             Color: {product.color.toUpperCase()} | Size: {product.size}
                                         </span>
                                         <span className="text-sm text-gray-600">Quantity: {product.quantity}</span>
                                     </div>
-                                </div>
+                                </Link>
                             );
                         })}
                     </div>
