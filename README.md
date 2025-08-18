@@ -2,6 +2,23 @@
 
 > Trang web bán áo đơn giản, hiện đại được xây dựng bằng Vite + React + TypeScript + Tailwind CSS + Ant Design.
 
+---
+
+## ⭐️ Tính năng chính
+
+- Hiển thị danh sách sản phẩm áo thời trang với hình ảnh, giá, phân loại
+- Tìm kiếm và lọc sản phẩm theo tên, loại áo, giá...
+- Thêm sản phẩm vào giỏ hàng, quản lý giỏ hàng
+- Đăng ký, đăng nhập, quản lý thông tin người dùng
+- Thanh toán đơn hàng (tích hợp với backend)
+- Responsive cho cả máy tính và điện thoại
+- Giao diện hiện đại, dễ sử dụng với Ant Design và Tailwind CSS
+- Quản lý trạng thái ứng dụng với Redux Toolkit
+- Hiệu ứng loading/spinner khi tải dữ liệu
+- Hỗ trợ icon FontAwesome, Ant Design Icons
+
+---
+
 ## 🚀 Công nghệ sử dụng
 
 - ⚛️ [React](https://reactjs.org/)
@@ -16,12 +33,10 @@
 ---
 
 ## 🛠️ Cài đặt & chạy dự án
+
+```bash
 git clone https://github.com/duynhan935/clothesWebsite.git
-
-cd clotheStore
-
+cd clothesWebsite
 npm install
-
 npm run dev
-
-
+```
