@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
-import { Button, Input, Modal, Select, Space, Table, Form, InputNumber, DatePicker, message } from "antd";
+import { Button, Modal, Space, Form, message } from "antd";
 import {
     getAllProducts,
     createProduct,
@@ -19,11 +19,9 @@ import { useNavigate } from "react-router-dom";
 import ProductTable from "../../components/Admin/ProductTable";
 import ProductFilter from "../../components/Admin/ProductFilter";
 
-const { Option } = Select;
-
 function ProductManagement() {
     const products = useSelector((state: RootState) => state.product.products);
-    const [loading, setLoading] = useState(false);
+    const [loading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [categories, setCategories] = useState<string[]>([]);
     const [editingProduct, setEditingProduct] = useState<any>(null);

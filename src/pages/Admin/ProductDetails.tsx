@@ -2,8 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Form, Select, Button, Upload, message, Table, InputNumber, Modal, Space } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { Form, Button, message, Table, Modal, Space } from "antd";
 import {
     createProductDetail,
     getProductById,
